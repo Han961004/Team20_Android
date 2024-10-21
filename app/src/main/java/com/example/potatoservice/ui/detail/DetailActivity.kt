@@ -16,6 +16,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivityDetailBinding
+import com.example.potatoservice.model.remote.Institute
+import com.example.potatoservice.ui.map.MapFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
@@ -40,8 +42,8 @@ class DetailActivity : AppCompatActivity() {
 	private var curLat: Double = 0.0
 	private var curLon: Double = 0.0
 	private lateinit var kakaoMap: KakaoMap
-
 	private lateinit var viewModel: DetailViewModel
+	private var institute: Institute? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -72,6 +74,23 @@ class DetailActivity : AppCompatActivity() {
 			finish()
 		}
 		showLoading()
+		binding.mapSizeUpButton.setOnClickListener {
+			mapSizeUp()
+		}
+	}
+	//지도 페이지로 이동
+	private fun mapSizeUp(){
+		val bundle = Bundle()
+		institute!!.latitude?.let { bundle.putDouble("latitude", it) }
+		institute!!.longitude?.let { bundle.putDouble("longitude", it) }
+		bundle.putString("name", institute!!.name)
+		val fragment = MapFragment()
+		fragment.arguments = bundle
+		val manager = supportFragmentManager
+		val transaction = manager.beginTransaction()
+		transaction.replace(binding.frameLayout.id, fragment)
+		transaction.addToBackStack(null)
+		transaction.commit()
 	}
 	//받아온 id로 봉사 활동 데이터 얻음
 	private fun getActivity(id: Int){
@@ -79,6 +98,7 @@ class DetailActivity : AppCompatActivity() {
 		viewModel.activityDetail.observe(this, Observer {activityDetail ->
 			binding.detail = activityDetail
 			binding.institute = activityDetail?.institute
+			institute = activityDetail?.institute
 			viewModel.setAgePossible()
 			viewModel.setGroupPossible()
 			binding.invalidateAll()

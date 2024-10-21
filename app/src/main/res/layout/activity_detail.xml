@@ -19,6 +19,7 @@
 
 
     <FrameLayout
+        android:id="@+id/frame_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -167,6 +168,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
+                <Button
+                    android:id="@+id/map_size_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/지도"
+                    android:textColor="@color/point_brown_2"
+                    android:background="@drawable/bg_plain"
+                    app:layout_constraintBottom_toTopOf="@+id/detail_map_layout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/volunteer_address"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
 <!--                지도, 현재위치-->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/detail_map_layout"
@@ -178,7 +191,7 @@
                     <com.kakao.vectormap.MapView
                         android:id="@+id/detail_map_view"
                         android:layout_width="match_parent"
-                        android:layout_height="600dp"
+                        android:layout_height="300dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -196,6 +209,7 @@
                         android:src="@drawable/ic_map_current_location"
                         app:layout_constraintBottom_toBottomOf="@id/detail_map_view"
                         app:layout_constraintEnd_toEndOf="@id/detail_map_view" />
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

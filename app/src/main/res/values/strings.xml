@@ -40,6 +40,7 @@
     <string name="url">기관 url : %1$s</string>
     <string name="기관리뷰">%1$s 리뷰</string>
     <string name="loading">로딩 중…</string>
+    <string name="지도">지도 크게 보기</string>
 
 
     <!--    MyPage_custom_dialog-->
