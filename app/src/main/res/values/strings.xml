@@ -41,7 +41,7 @@
     <string name="기관리뷰">%1$s 리뷰</string>
     <string name="loading">로딩 중…</string>
     <string name="지도">지도 크게 보기</string>
-
+    <string name="검색결과">총 %1$d건</string>
 
     <!--    MyPage_custom_dialog-->
     <string name="question_1">간단한 설문에 답해주실 수 있나요?</string>

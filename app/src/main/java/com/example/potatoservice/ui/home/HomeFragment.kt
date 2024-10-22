@@ -26,13 +26,14 @@ class HomeFragment : Fragment(), AdapterCallback {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
+    var numberOfElements: Int = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        binding.viewModel = homeViewModel
+        binding.home = this
         setRecyclerAdapter()
         setSpinner()
         showLoading()
@@ -47,9 +48,16 @@ class HomeFragment : Fragment(), AdapterCallback {
             val request = Request(page, size, sort, beforeDeadlineOnly, teenPossibleOnly, category)
             homeViewModel.search(request)
         }
+        getNumberOfElements()
         return binding.root
     }
-
+    //검색 결과 개수 업데이트
+    private fun getNumberOfElements(){
+        homeViewModel.numberOfElements.observe(viewLifecycleOwner, Observer {
+            numberOfElements = it
+            binding.invalidateAll()
+        })
+    }
     //로딩 화면 설정
     private fun showLoading() {
         homeViewModel.loading.observe(viewLifecycleOwner, Observer { loading ->
