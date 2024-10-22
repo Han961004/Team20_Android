@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -146,21 +145,22 @@ class DetailActivity : AppCompatActivity() {
 		}, object : KakaoMapReadyCallback() {
 			override fun onMapReady(kakaoMap: KakaoMap) {
 				this@DetailActivity.kakaoMap = kakaoMap
-				setInitialCameraPosition()
-				setMarker()
+				//기관 위치 지도에서 마커로 표시하고 카메라 이동.
+				viewModel.loading.observe(this@DetailActivity, Observer {
+					if (institute?.latitude != null && institute?.longitude != null){
+						val latLng = LatLng.from(institute?.latitude!!, institute?.longitude!!)
+						setInitialCameraPosition(latLng)
+						setMarker(latLng)
+					}
+				})
 			}
 		})
 	}
 	//봉사 활동 장소 마커로 표시
-	private fun setMarker() {
-		currentLocation {latLng ->
-			val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker).setZoomLevel(5))
-			//일단은 현재 위치에 마커를 생성
-			val labelOptions = LabelOptions.from(latLng).setStyles(styles)
-			// 라벨 추가
-//			Log.d("testt", "위도: $curLat, 경도: $curLon")
-			kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
-		}
+	private fun setMarker(latLng:LatLng) {
+		val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5))
+		val labelOptions = LabelOptions.from(latLng).setStyles(styles)
+		kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
 
 	}
 	//현재 위치 계산
@@ -192,12 +192,10 @@ class DetailActivity : AppCompatActivity() {
 			Toast.makeText(this, "현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
 		}
 	}
-	// 현재 위치로 이동
-	private fun setInitialCameraPosition() {
-		currentLocation { latLng ->
-			val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
-			kakaoMap.moveCamera(cameraUpdate)
-		}
+	// 기관 위치로 이동
+	private fun setInitialCameraPosition(latLng: LatLng) {
+		val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
+		kakaoMap.moveCamera(cameraUpdate)
 	}
 	//로딩 화면 설정
 	private fun showLoading(){
