@@ -1,6 +1,5 @@
 package com.example.potatoservice.ui.home
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
