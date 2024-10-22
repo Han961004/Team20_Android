@@ -39,7 +39,8 @@ class HomeSearchDataSource @Inject constructor(private val apiService: APIServic
 					) {
 						if (response.isSuccessful){
 							val activityList = response.body()?.toActivityList()?: emptyList()
-							callback.onLoaded(activityList)
+							val numberOfElements = response.body()?.numberOfElements?:0
+							callback.onLoaded(activityList, numberOfElements)
 						} else{
 							callback.onFailed()
 						}

@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="viewModel"
-            type="com.example.potatoservice.ui.home.HomeViewModel" />
+            name="home"
+            type="com.example.potatoservice.ui.home.HomeFragment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -63,34 +63,35 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginStart="10dp">
 
                 <Spinner
                     android:id="@+id/sort"
-                    android:layout_width="110dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="45dp"
                     android:popupBackground="@color/base_beige_1"/>
                 <Spinner
                     android:id="@+id/major_regional_categories"
-                    android:layout_width="120dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="45dp"
                     android:popupBackground="@color/base_beige_1"/>
 
                 <Spinner
                     android:id="@+id/minor_regional_categories"
-                    android:layout_width="120dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="45dp"
                     android:popupBackground="@color/base_beige_1"/>
 
                 <Spinner
                     android:id="@+id/volunteer_activities_categories"
-                    android:layout_width="110dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="45dp"
                     android:popupBackground="@color/base_beige_1"/>
 
                 <Spinner
                     android:id="@+id/age_categories"
-                    android:layout_width="110dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="45dp"/>
             </LinearLayout>
         </HorizontalScrollView>
@@ -108,12 +109,13 @@
             <TextView
                 android:layout_width="200dp"
                 android:layout_height="30sp"
-                android:text="@{viewModel.searchResultCountText}"
+                android:text="@{@string/검색결과(home.numberOfElements)}"
                 android:textSize="20sp"
                 android:textColor="#424242"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginStart="10dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
