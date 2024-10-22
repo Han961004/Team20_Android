@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivityDetailBinding
+import com.example.potatoservice.model.remote.ActivityDetail
 import com.example.potatoservice.model.remote.Institute
 import com.example.potatoservice.ui.map.MapFragment
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -42,7 +43,10 @@ class DetailActivity : AppCompatActivity() {
 	private var curLon: Double = 0.0
 	private lateinit var kakaoMap: KakaoMap
 	private lateinit var viewModel: DetailViewModel
+	//기관 정보
 	private var institute: Institute? = null
+	//상세 정보
+	private var detail: ActivityDetail? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -57,9 +61,10 @@ class DetailActivity : AppCompatActivity() {
 		setProgress()
 		//전화걸기 버튼
 		binding.callButton.setOnClickListener {
-			val phoneNumber = "12345678"
-			val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber"))
-			startActivity(intent)
+			viewModel.loading.observe(this, Observer {
+				val phoneNumber = detail?.actPhone
+				startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
+			})
 		}
 
 		//지도 기능들
@@ -98,6 +103,7 @@ class DetailActivity : AppCompatActivity() {
 			binding.detail = activityDetail
 			binding.institute = activityDetail?.institute
 			institute = activityDetail?.institute
+			detail = activityDetail
 			viewModel.setAgePossible()
 			viewModel.setGroupPossible()
 			binding.invalidateAll()
