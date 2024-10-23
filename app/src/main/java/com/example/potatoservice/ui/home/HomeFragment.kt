@@ -36,7 +36,8 @@ class HomeFragment : Fragment(), AdapterCallback {
         binding.home = this
         setRecyclerAdapter()
         setSpinner()
-        showLoading()
+        showSpinnerLoading()
+        showSearchLoading()
         //검색 버튼 클릭 시
         binding.searchButton.setOnClickListener {
             val page = 0
@@ -60,9 +61,9 @@ class HomeFragment : Fragment(), AdapterCallback {
             binding.invalidateAll()
         })
     }
-    //로딩 화면 설정
-    private fun showLoading() {
-        homeViewModel.loading.observe(viewLifecycleOwner, Observer { loading ->
+    //검색 로딩 화면 설정
+    private fun showSearchLoading() {
+        homeViewModel.searchLoading.observe(viewLifecycleOwner, Observer { loading ->
             if (loading) {
                 binding.searchResultRecyclerView.visibility = View.GONE
                 binding.loadingShimmer.visibility = View.VISIBLE
@@ -74,6 +75,22 @@ class HomeFragment : Fragment(), AdapterCallback {
             }
         })
 
+    }
+    //초기 스피너 설정 시 로딩 화면 구현
+    private fun showSpinnerLoading() {
+        homeViewModel.sidoLodaing.observe(viewLifecycleOwner, Observer { sidoLoading ->
+            if(sidoLoading){
+                //로딩 시작
+                binding.homeLayout.visibility = View.GONE
+                binding.loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.startShimmer()
+            }else{
+                //로딩 종료
+                binding.loadingLayout.stopShimmer()
+                binding.loadingLayout.visibility = View.GONE
+                binding.homeLayout.visibility = View.VISIBLE
+            }
+        })
     }
 
     //검색 결과 리사이클러뷰 설정

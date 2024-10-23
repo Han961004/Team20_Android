@@ -12,7 +12,8 @@ import javax.inject.Inject
 class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 	private val _sidoList = MutableLiveData<List<SidoGungu>>()
 	val sidoList get() = _sidoList
-
+	private val _sidoLoading = MutableLiveData(true)
+	val sidoLoading get() = _sidoLoading
 	fun getSidoList() {
 		apiService.getSido().enqueue(
 			object : Callback<List<SidoGungu>>{
@@ -30,15 +31,18 @@ class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 								sidoGungu.sido
 							)
 						}
+						_sidoLoading.value = false
 					}else{
 						Log.e("testt", "onResponse fail: ${response.code()}")
 						_sidoList.value = emptyList()
+						_sidoLoading.value = false
 					}
 				}
 
 				override fun onFailure(call: Call<List<SidoGungu>>, t: Throwable) {
 					Log.e("testt", "onFailure: ${t.message}")
 					_sidoList.value = emptyList()
+					_sidoLoading.value = false
 				}
 
 			}

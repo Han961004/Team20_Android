@@ -3,7 +3,6 @@ package com.example.potatoservice.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.model.remote.SidoGungu
@@ -34,8 +33,6 @@ class HomeViewModel @Inject constructor(
 
 	//정렬
 	val sortList = listOf("최신순", "거리순", "마감 임박순")
-	//지역 대분류
-//	val majorRegoinList = listOf("지역 대분류", "경기", "대구", "서울")
 	//지역 소분류
 	var minorRegoinList = listOf(
 		listOf("지역 소분류"), listOf("지역 소분류", "남양주", "성남"),
@@ -49,15 +46,17 @@ class HomeViewModel @Inject constructor(
 		"HEALTHCARE_AND_PUBLIC_WELFARE", "COUNSELING_AND_VOLUNTEER_TRAINING", "OTHER_ACTIVITIES")
 	//나이 제한
 	val ageList = listOf("나이 제한 없음", "청소년만", "성인만")
-	val loading = homeRepository.loading
+	//검색 결과 로딩 변수
+	val searchLoading = homeRepository.loading
 	//검색 기능
 	fun search(
 		request: Request
 	) {
 		homeRepository.search(request)
 	}
-
+	//지역 대분류
 	val sidoList:LiveData<List<SidoGungu>> = spinnerRepository.sidoList
+	val sidoLodaing:LiveData<Boolean> = spinnerRepository.sidoLoading
 	fun searchSidoList(){
 		spinnerRepository.searchSidoList()
 	}
