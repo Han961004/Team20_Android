@@ -2,6 +2,7 @@ package com.example.potatoservice.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,10 +42,12 @@ class HomeFragment : Fragment(), AdapterCallback {
             val page = 0
             val size: Int? = null
             val sort: String? = null
+            val sidoCode: Int? = null
+            val sidoGunguCode: Int? = null
             val beforeDeadlineOnly: Boolean? = null
             val teenPossibleOnly: Boolean? = null
             val category: String? = null
-            val request = Request(page, size, sort, beforeDeadlineOnly, teenPossibleOnly, category)
+            val request = Request(page, size, sort, sidoCode, sidoGunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
             homeViewModel.search(request)
         }
         getNumberOfElements()
@@ -85,6 +88,8 @@ class HomeFragment : Fragment(), AdapterCallback {
 
     //필터들 설정
     private fun setSpinner() {
+        //시도 리스트 받아 오기
+        homeViewModel.searchSidoList()
         // 정렬 스피너 설정
         val sortAdapter = ArrayAdapter(
             requireContext(),
@@ -105,40 +110,46 @@ class HomeFragment : Fragment(), AdapterCallback {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+        Log.d("testt", "${homeViewModel.sidoList.value?.forEach { it.sidoName }}")
+        homeViewModel.sidoList.observe(viewLifecycleOwner, Observer {sidoGunguList ->
+            val majorRegoinList = mutableListOf("지역 대분류")
+            majorRegoinList.addAll(sidoGunguList.map { sidoGungu -> sidoGungu.sidoName })
 
-        // 지역 대분류 스피너 설정
-        val majorRegionAdapter = SpinnerHintAdapter(
-            requireContext(),
-            com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.majorRegoinList
-        )
-        majorRegionAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
-        binding.majorRegionalCategories.adapter = majorRegionAdapter
-        //지역 대분류 선택 시
-        binding.majorRegionalCategories.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    //지역 대분류 선택에 따라 소분류 목록이 바뀜
-                    val minorRegionAdapter =SpinnerHintAdapter(
-                        requireContext(),
-                        com.example.potatoservice.R.layout.spinner_item,
-                        homeViewModel.minorRegoinList[position]
-                    )
-                    minorRegionAdapter.setDropDownViewResource(
-                        com.example.potatoservice.R.layout.spinner_item_dropdown)
-                    binding.minorRegionalCategories.adapter = minorRegionAdapter
+            // 지역 대분류 스피너 설정
+            val majorRegionAdapter = SpinnerHintAdapter(
+                requireContext(),
+                com.example.potatoservice.R.layout.spinner_item,
+                majorRegoinList
+            )
+            majorRegionAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
+            binding.majorRegionalCategories.adapter = majorRegionAdapter
+            //지역 대분류 선택 시
+            binding.majorRegionalCategories.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        //지역 대분류 선택에 따라 소분류 목록이 바뀜
+                        val minorRegionAdapter =SpinnerHintAdapter(
+                            requireContext(),
+                            com.example.potatoservice.R.layout.spinner_item,
+                            homeViewModel.minorRegoinList[position]
+                        )
+                        minorRegionAdapter.setDropDownViewResource(
+                            com.example.potatoservice.R.layout.spinner_item_dropdown)
+                        binding.minorRegionalCategories.adapter = minorRegionAdapter
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                    }
+
                 }
+        })
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                }
-
-            }
 
         //지역 소분류 스피너 설정
         val minorRegionAdapter =SpinnerHintAdapter(
