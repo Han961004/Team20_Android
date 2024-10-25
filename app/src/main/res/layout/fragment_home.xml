@@ -75,12 +75,6 @@
                     android:popupBackground="@color/base_beige_1"/>
 
                 <Spinner
-                    android:id="@+id/sort"
-                    android:layout_width="wrap_content"
-                    android:layout_height="45dp"
-                    android:popupBackground="@color/base_beige_1"/>
-
-                <Spinner
                     android:id="@+id/major_regional_categories"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
