@@ -1,5 +1,4 @@
 package com.example.potatoservice.ui.home
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -224,6 +223,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         intent.putExtra("id", id) // 데이터 추가
         startActivity(intent)
     }
+
 
 
 }
