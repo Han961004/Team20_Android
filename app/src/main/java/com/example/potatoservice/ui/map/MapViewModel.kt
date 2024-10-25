@@ -49,7 +49,6 @@ class MapViewModel : ViewModel() {
 
     private val _markerDataList = MutableLiveData<List<MarkerData>>()
     val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
-
     private val _selectedMarker = MutableLiveData<MarkerData?>()
     val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
 
@@ -89,6 +88,7 @@ class MapViewModel : ViewModel() {
     fun clearSelectedMarker() {
         _selectedMarker.value = null
     }
+
 
     // 지도에 라벨 추가
     fun addMarkersToMap(kakaoMap: KakaoMap) {
@@ -130,6 +130,7 @@ class MapViewModel : ViewModel() {
     fun moveInstitute(kakaoMap: KakaoMap, latLng: LatLng) {
         val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         kakaoMap.moveCamera(cameraUpdate)
+
     }
 
 }

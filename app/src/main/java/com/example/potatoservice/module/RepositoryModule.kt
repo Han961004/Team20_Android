@@ -1,5 +1,6 @@
 package com.example.potatoservice.module
 
+
 import com.example.potatoservice.ui.detail.DetailRepository
 import com.example.potatoservice.ui.detail.DetailSearchData
 import com.example.potatoservice.ui.home.HomeRepository

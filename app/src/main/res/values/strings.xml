@@ -18,6 +18,7 @@
 
     <!-- HomeFragment -->
     <string name="closed_volunteer_look">마감된 봉사 포함</string>
+
     <string name="detail">상세 보기</string>
     <string name="review1">고지된 업무 내용이 실제와 일치하였나요?</string>
     <string name="review2">담당자는 친절하였나요?</string>
@@ -28,6 +29,7 @@
     <string name="봉사장소">봉사 장소 : %1$s</string>
     <string name="봉사설명">봉사 설명 : %1$s</string>
     <string name="카테고리">봉사 종류 : %1$s</string>
+
     <string name="마감기간">마감 기간 : ~ %1$s</string>
     <string name="모집인원">모집 인원 : %1$d</string>
     <string name="활동날짜">활동 날짜 : %1$s ~ %2$s</string>
@@ -49,5 +51,6 @@
     <string name="question_3">봉사 기관의 담당자 분은 친절한 태도로 도와주셨나요?</string>
     <string name="question_4">이 봉사활동에 다시 참여하고 싶은 마음이 있나요?</string>
     <string name="question_5">설문에 답해주셔서 감사합니다</string>
+
 
 </resources>
