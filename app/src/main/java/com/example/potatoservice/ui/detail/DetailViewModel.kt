@@ -3,9 +3,10 @@ package com.example.potatoservice.ui.detail
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.potatoservice.ui.home.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
 	application: Application,
-	private val repository: HomeRepository
+	private val repository: DetailRepository
 ): AndroidViewModel(application){
 	//리뷰 퍼센트지 값
 	var review1 = "50"
@@ -31,27 +32,29 @@ class DetailViewModel @Inject constructor(
 		Log.d("testt", "viewModelScope ${activityDetail.value?.actTitle}")
 	}
 
-	val agePossible: String = getPossibleAge()
+	private val _agePossible = MutableLiveData<String>()
+	val agePossible: LiveData<String> = _agePossible
+	//나이 제한 업데이트
+	fun setAgePossible(){
+		_agePossible.value = when {
+			activityDetail.value == null -> "세부 정보 없음"
+			activityDetail.value!!.teenPossible && activityDetail.value!!.adultPossible -> "모두 가능"
+			activityDetail.value!!.teenPossible && !activityDetail.value!!.adultPossible -> "청소년만 가능"
+			!activityDetail.value!!.teenPossible && activityDetail.value!!.adultPossible -> "성인만 가능"
+			else -> "모두 불가능" }
+	}
 
-	private fun getPossibleAge(): String {
-		return if (activityDetail.value != null){
-			if (activityDetail.value!!.teenPossible && activityDetail.value!!.adultPossible) {
-				"모두 가능"
-			} else if (activityDetail.value!!.teenPossible && !activityDetail.value!!.adultPossible) {
-				"청소년만 가능"
-			} else if (!activityDetail.value!!.teenPossible && activityDetail.value!!.adultPossible) {
-				"성인만 가능"
-			} else {
-				"모두 불가능"
-			}
-		} else{
-			"세부 정보 없음"
+	private val _groupPossible = MutableLiveData<String>()
+
+	val groupPossible:  LiveData<String> = _groupPossible
+	fun setGroupPossible() {
+		_groupPossible.value = when {
+			activityDetail.value == null -> "세부 정보 없음"
+			activityDetail.value!!.groupPossible -> "가능"
+			else -> "불가능"
 		}
 	}
-	val groupPossible: String = if (activityDetail.value != null){
-			if (activityDetail.value!!.groupPossible) "가능" else "불가능"
-		} else{
-			"세부 정보 없음"
-		}
+
+	val loading = repository.loading
 
 }
