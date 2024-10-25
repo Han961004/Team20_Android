@@ -4,10 +4,13 @@ import android.content.Context
 import android.widget.ArrayAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.potatoservice.R
 
 class MyPageViewModel(private val context: Context, private val myPageModel: MyPageModel) : ViewModel() {
+
+
 
     //봉사시간
     private val _vmVolunteerHours = MutableLiveData<Int>()
@@ -45,16 +48,19 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     init {
         vmSpinnerAdapter = ArrayAdapter(context, R.layout.spinner_item, vmSpinnerItems)
         vmSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown)
+
         myPageModel.volunteerHousr.observeForever {
             _vmVolunteerHours.value = it
             calculateEx(it)
         }
+
         myPageModel.volunteerCount.observeForever {
             _vmVolunteerCount.value = it
         }
         myPageModel.recyclerViewCount.observeForever {
             _vmRecyclerViewCount.value = it
         }
+
     }
 
 
@@ -62,6 +68,7 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
         //봉사시간 10시간마다 레벨 업
         val level = hours / 10
         val progressValue = (hours % 10)*10
+
         _vmLevel.value = level
         _progress.value = progressValue
         _progressPercent.value = progressValue

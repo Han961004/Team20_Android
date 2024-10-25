@@ -12,6 +12,7 @@
             name="institute"
             type="com.example.potatoservice.model.remote.Institute" />
 
+
         <variable
             name="viewmodel"
             type="com.example.potatoservice.ui.detail.DetailViewModel" />
@@ -218,11 +219,13 @@
         </ScrollView>
 
         <!-- 신청하기 전화로 문의하기            -->
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom">
+
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -239,6 +242,7 @@
                 android:background="@drawable/bg_plain"
                 android:text="@string/request"
                 android:textColor="@color/point_brown_2"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -251,6 +255,7 @@
                 android:background="@drawable/bg_plain"
                 android:text="@string/call"
                 android:textColor="@color/point_brown_2"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/guideline" />

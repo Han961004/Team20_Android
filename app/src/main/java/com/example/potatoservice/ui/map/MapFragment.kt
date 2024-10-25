@@ -97,6 +97,7 @@ class MapFragment : Fragment() {
                 }
                 // 디테일에서 기관 정보 얻음
                 getInstituteLocation(kakaoMap)
+
             }
         })
     }
