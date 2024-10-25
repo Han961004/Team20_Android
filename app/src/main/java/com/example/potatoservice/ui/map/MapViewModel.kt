@@ -83,28 +83,16 @@ class MapViewModel : ViewModel() {
         _selectedMarker.value = markerData
     }
 
-    // Clear selected marker
-    fun clearSelectedMarker() {
-        _selectedMarker.value = null
-    }
-
     // 지도에 라벨 추가
     fun addMarkersToMap(kakaoMap: KakaoMap) {
         val markerDataList = _markerDataList.value ?: return
 
         for (markerData in markerDataList) {
-            // lat과 lng 값을 사용하여 LatLng 객체 생성
             val latLng = LatLng.from(markerData.lat, markerData.lng)
-
-            // 마커 스타일 설정 (원하는 스타일로 변경 가능)
             val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker).setZoomLevel(5))
             val labelOptions = LabelOptions.from(latLng).setStyles(styles)
-
-            // 라벨 추가
             val label = kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
             Log.d("testt", "Marker added at: ${latLng.latitude}, ${latLng.longitude}")
-
-            // 라벨에 MarkerData 연결
             label.tag = markerData
         }
 
