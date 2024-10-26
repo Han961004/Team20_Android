@@ -20,8 +20,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), AdapterCallback {
-
-
+    //선택된 시도 코드 값
+    private var sidoCode: Int? = null
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
@@ -42,7 +42,6 @@ class HomeFragment : Fragment(), AdapterCallback {
             val page = 0
             val size: Int? = null
             val sort: String? = null
-            val sidoCode: Int? = null
             val sidoGunguCode: Int? = null
             val beforeDeadlineOnly: Boolean? = null
             val teenPossibleOnly: Boolean? = null
@@ -126,11 +125,13 @@ class HomeFragment : Fragment(), AdapterCallback {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-        Log.d("testt", "${homeViewModel.sidoList.value?.forEach { it.sidoName }}")
         homeViewModel.sidoList.observe(viewLifecycleOwner, Observer {sidoGunguList ->
+            //지역 대분류 시도 이름 리스트 저장
             val majorRegoinList = mutableListOf("지역 대분류")
             majorRegoinList.addAll(sidoGunguList.map { sidoGungu -> sidoGungu.sidoName })
-
+            // 지역 대분류 시도 코드 리스트 저장
+            val majorSidoCodeList = mutableListOf<Int>(0)
+            majorSidoCodeList.addAll(sidoGunguList.map { sidoGungu -> sidoGungu.sidoCode })
             // 지역 대분류 스피너 설정
             val majorRegionAdapter = SpinnerHintAdapter(
                 requireContext(),
@@ -148,6 +149,12 @@ class HomeFragment : Fragment(), AdapterCallback {
                         position: Int,
                         id: Long
                     ) {
+                        //지역 대분류 선택 시 선택된 시도 코드 저장
+                        sidoCode = if (position != 0){
+                            majorSidoCodeList[position]
+                        }else{
+                            null
+                        }
                         //지역 대분류 선택에 따라 소분류 목록이 바뀜
                         val minorRegionAdapter =SpinnerHintAdapter(
                             requireContext(),
