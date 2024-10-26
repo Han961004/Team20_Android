@@ -1,20 +1,17 @@
 package com.example.potatoservice.ui.mypage
 
-import android.app.Dialog
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import com.example.potatoservice.R
 import com.example.potatoservice.databinding.DialogCustomBinding
 
-class CustomDialogFragment : DialogFragment() {
+class CustomDialogFragment() : DialogFragment() {
 
     private lateinit var binding: DialogCustomBinding
 
@@ -27,17 +24,22 @@ class CustomDialogFragment : DialogFragment() {
     private var listener: OnDialogButtonClickListener? = null
 
     companion object {
-        private const val ARG_TITLE = "title"
-        private const val ARG_IMAGE = "image"
-        private const val ARG_CONTENT = "content"
+        private const val DIALOG_TITLE = "title"
+        private const val DIALOG_IMAGE = "image"
+        private const val DIALOG_CONTENT = "content"
+        private const val DIALOG_POSIVIVE_BUTTON = "positive"
+        private const val DIALOG_NEGATIVE_BUTTON = "negative"
 
         // newInstance 메서드로 매개변수 전달
-        fun newInstance(title: String, image: Int, content: String): CustomDialogFragment {
+        fun newInstance(dialogModel: DialogModel): CustomDialogFragment {
             val fragment = CustomDialogFragment()
             val args = Bundle()
-            args.putString(ARG_TITLE, title)
-            args.putInt(ARG_IMAGE, image)
-            args.putString(ARG_CONTENT, content)
+            args.putString(DIALOG_TITLE, dialogModel.title)
+            args.putInt(DIALOG_IMAGE, dialogModel.imageBackground)
+            args.putString(DIALOG_CONTENT, dialogModel.content)
+            args.putString(DIALOG_POSIVIVE_BUTTON, dialogModel.positiveButtonText)
+            args.putString(DIALOG_NEGATIVE_BUTTON, dialogModel.negativeButtonText)
+
             fragment.arguments = args
             return fragment
         }
@@ -53,18 +55,23 @@ class CustomDialogFragment : DialogFragment() {
 //        dialog?.window?.requestFeature(Window.FEATURE_NO_TITLE) //다이얼로그의 타이틀바 제거 //없어도 되는 것 같기도..
 
         // 매개변수로 전달받은 값 사용
-        val title = arguments?.getString(ARG_TITLE)
-        val imageResId = arguments?.getInt(ARG_IMAGE)
-        val content = arguments?.getString(ARG_CONTENT)
+        val title = arguments?.getString(DIALOG_TITLE) ?: "default_title"
+        val imageResId = arguments?.getInt(DIALOG_IMAGE) ?: R.drawable.potato_lv1
+        val content = arguments?.getString(DIALOG_CONTENT) ?: "deault_content"
+        val positiveButton = arguments?.getString(DIALOG_POSIVIVE_BUTTON) ?: "네"
+        val negativeButton = arguments?.getString(DIALOG_NEGATIVE_BUTTON) ?: "아니오"
 
         // 전달받은 데이터를 다이얼로그 UI에 설정
         binding.customDialogTitle.text = title
         binding.customDialogImage.setImageResource(imageResId ?: 0)
         binding.customDialogContent.text = content
+        binding.customDialogPositive.text = positiveButton
+        binding.customDialogNegative.text = negativeButton
 
         // 닫기 버튼 이벤트 처리
         binding.customDialogClose.setOnClickListener {
 //            dismiss()
+            //todo 중간에 닫기로 나갔을 때 로직 구현
         }
 
         // 긍정 버튼 이벤트 처리
@@ -78,8 +85,6 @@ class CustomDialogFragment : DialogFragment() {
             listener?.onNegativeButtonClick()
             dismiss()
         }
-
-        binding.customDialogTitle
 
         return binding.root
     }
@@ -103,14 +108,6 @@ class CustomDialogFragment : DialogFragment() {
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
-
-//    override fun onResume() {
-//        super.onResume()
-//        // full Screen code
-//        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-//        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//        dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-//    }
 
     fun setDialogListener(listener: OnDialogButtonClickListener) {
         this.listener = listener

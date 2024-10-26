@@ -6,6 +6,8 @@ plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.jetbrains.kotlin.android)
 	id("kotlin-kapt")
+	//Hilt
+	id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -75,5 +77,11 @@ dependencies {
 	implementation("com.kakao.sdk:v2-user:2.20.6") // 카카오 로그인 API 모듈
 	implementation("com.google.android.gms:play-services-location:21.0.1")
 
+	//Hilt
+	implementation("com.google.dagger:hilt-android:2.48.1")
+	kapt("com.google.dagger:hilt-compiler:2.48.1")
+	implementation("androidx.fragment:fragment-ktx:1.6.1")
+	//Shimmer 로딩 라이브러리
+	implementation ("com.facebook.shimmer:shimmer:0.5.0")
 
 }

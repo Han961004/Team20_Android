@@ -100,6 +100,9 @@ class MapFragment : Fragment() {
                         showCardView()
                     } ?: hideCardView()
                 }
+                // 디테일에서 기관 정보 얻음
+                getInstituteLocation(kakaoMap)
+
             }
         })
     }
@@ -145,6 +148,18 @@ class MapFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    //디테일에서 기관 정보 얻음
+    private fun getInstituteLocation(kakaoMap: KakaoMap) {
+        val name = this.arguments?.getString("name") ?: "기관명"
+        val latitude = this.arguments?.getDouble("latitude")
+        val longitude = this.arguments?.getDouble("longitude")
+        //기관 정보가 있으면
+        if (latitude != null && longitude != null) {
+            val latLng = LatLng.from(latitude, longitude)
+            mapViewModel.addInstituteMarker(kakaoMap, latLng, name)
+            mapViewModel.moveInstitute(kakaoMap, latLng)
+        }
     }
 
 

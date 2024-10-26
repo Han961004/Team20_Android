@@ -6,19 +6,22 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivityDetailBinding
-import com.example.potatoservice.ui.share.Volunteer
+import com.example.potatoservice.model.remote.ActivityDetail
+import com.example.potatoservice.model.remote.Institute
+import com.example.potatoservice.ui.map.MapFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.KakaoMapSdk
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapAuthException
 import com.kakao.vectormap.MapLifeCycleCallback
@@ -27,61 +30,91 @@ import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 	//봉사 활동 id
 	private var id = 0
 	private lateinit var binding: ActivityDetailBinding
-	var institution = ""
 	private lateinit var mapView: MapView
 	private lateinit var fusedLocationClient: FusedLocationProviderClient
 	private var curLat: Double = 0.0
 	private var curLon: Double = 0.0
 	private lateinit var kakaoMap: KakaoMap
-	//리뷰 퍼센트지 값
-	var review1 = "50"
-	var review2 = "40"
-	var review3 = "30"
+	private lateinit var viewModel: DetailViewModel
+	//기관 정보
+	private var institute: Institute? = null
+	//상세 정보
+	private var detail: ActivityDetail? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-
+		viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
 		val intent = intent
 		//인텐트로 id 받아옴
 		id = intent.getIntExtra("id", 0)
 		binding = DataBindingUtil.setContentView(this, R.layout.activity_detail)
-		binding.volunteer = getVolunteer(id)
-		binding.detail = this
+
+		binding.viewmodel = viewModel
+		getActivity(id)
 		setProgress()
 		//전화걸기 버튼
 		binding.callButton.setOnClickListener {
-			val phoneNumber = "12345678"
-			val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber"))
-			startActivity(intent)
+			viewModel.loading.observe(this, Observer {
+				val phoneNumber = detail?.actPhone
+				startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
+			})
 		}
+
 		//지도 기능들
 		setMapView()
 		//지도 현위치 버튼
 		binding.buttonCurrentLocation.setOnClickListener {
 			moveToCurrentLocation()
 		}
+		//닫기 버튼
+		binding.detailClose.setOnClickListener {
+			finish()
+		}
+		showLoading()
+		binding.mapSizeUpButton.setOnClickListener {
+			mapSizeUp()
+		}
+	}
+	//지도 페이지로 이동
+	private fun mapSizeUp(){
+		val bundle = Bundle()
+		institute!!.latitude?.let { bundle.putDouble("latitude", it) }
+		institute!!.longitude?.let { bundle.putDouble("longitude", it) }
+		bundle.putString("name", institute!!.name)
+		val fragment = MapFragment()
+		fragment.arguments = bundle
+		val manager = supportFragmentManager
+		val transaction = manager.beginTransaction()
+		transaction.replace(binding.frameLayout.id, fragment)
+		transaction.addToBackStack(null)
+		transaction.commit()
 	}
 	//받아온 id로 봉사 활동 데이터 얻음
-	//테스트용 데이터
-	private fun getVolunteer(id: Int):Volunteer {
-		institution = "조직111111111111111111끝"
-		return Volunteer("봉사 활동 제목 12345678912345678911111111끝",
-			"조직11111111111111111111111끝", "category111111111111111111끝",
-			"recruitmentPeriod",
-			"recruitmentNumber11111111111111111111111111끝", "time",
-			"serviceRecognitionTime", "location", "확정"
-		)
+	private fun getActivity(id: Int){
+		viewModel.getDetail(id)
+		viewModel.activityDetail.observe(this, Observer {activityDetail ->
+			binding.detail = activityDetail
+			binding.institute = activityDetail?.institute
+			institute = activityDetail?.institute
+			detail = activityDetail
+			viewModel.setAgePossible()
+			viewModel.setGroupPossible()
+			binding.invalidateAll()
+		})
+
 	}
 	//리뷰 표시
 	private fun setProgress(){
-		binding.progressBar1.progress = review1.toInt()
-		binding.progressBar2.progress = review2.toInt()
-		binding.progressBar3.progress = review3.toInt()
+		binding.progressBar1.progress = viewModel.review1.toInt()
+		binding.progressBar2.progress = viewModel.review2.toInt()
+		binding.progressBar3.progress = viewModel.review3.toInt()
 	}
 	//지도 기능들
 	override fun onResume() {
@@ -98,9 +131,15 @@ class DetailActivity : AppCompatActivity() {
 	private fun setMapView(){
 		mapView = binding.detailMapView
 		fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+//		mapView.setOnTouchListener { v, event ->
+//			v.parent.requestDisallowInterceptTouchEvent(true)
+//			Log.d("seyoung","setOnTouchListener")
+//			false
+//		}
+
 		mapView.start(object : MapLifeCycleCallback() {
 			override fun onMapDestroy() {
-				Log.d("testt", "onMapDestroy")
 			}
 
 			override fun onMapError(error: Exception) {
@@ -114,21 +153,22 @@ class DetailActivity : AppCompatActivity() {
 		}, object : KakaoMapReadyCallback() {
 			override fun onMapReady(kakaoMap: KakaoMap) {
 				this@DetailActivity.kakaoMap = kakaoMap
-				setInitialCameraPosition()
-				setMarker()
+				//기관 위치 지도에서 마커로 표시하고 카메라 이동.
+				viewModel.loading.observe(this@DetailActivity, Observer {
+					if (institute?.latitude != null && institute?.longitude != null){
+						val latLng = LatLng.from(institute?.latitude!!, institute?.longitude!!)
+						setInitialCameraPosition(latLng)
+						setMarker(latLng)
+					}
+				})
 			}
 		})
 	}
 	//봉사 활동 장소 마커로 표시
-	private fun setMarker() {
-		currentLocation {latLng ->
-			val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker).setZoomLevel(5))
-			//일단은 현재 위치에 마커를 생성
-			val labelOptions = LabelOptions.from(latLng).setStyles(styles)
-			// 라벨 추가
-			Log.d("testt", "위도: $curLat, 경도: $curLon")
-			kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
-		}
+	private fun setMarker(latLng:LatLng) {
+		val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5))
+		val labelOptions = LabelOptions.from(latLng).setStyles(styles)
+		kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
 
 	}
 	//현재 위치 계산
@@ -144,7 +184,7 @@ class DetailActivity : AppCompatActivity() {
 				curLat = it.latitude
 				curLon = it.longitude
 				val latLng = LatLng.from(curLat, curLon)
-				Log.d("CurrentLocation", "위도: $curLat, 경도: $curLon")
+//				Log.d("CurrentLocation", "위도: $curLat, 경도: $curLon")
 				onLocationRetrieved(latLng) // 위치를 찾았을 때 콜백 호출
 			} ?: run {
 				Toast.makeText(this, "위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
@@ -160,11 +200,24 @@ class DetailActivity : AppCompatActivity() {
 			Toast.makeText(this, "현재 위치로 이동합니다.", Toast.LENGTH_SHORT).show()
 		}
 	}
-	// 현재 위치로 이동
-	private fun setInitialCameraPosition() {
-		currentLocation { latLng ->
-			val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
-			kakaoMap.moveCamera(cameraUpdate)
-		}
+	// 기관 위치로 이동
+	private fun setInitialCameraPosition(latLng: LatLng) {
+		val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
+		kakaoMap.moveCamera(cameraUpdate)
+	}
+	//로딩 화면 설정
+	private fun showLoading(){
+		viewModel.loading.observe(this, Observer {loading->
+			if (loading){
+				binding.main.visibility = View.GONE
+				binding.loadingLayout.visibility = View.VISIBLE
+				binding.loadingLayout.startShimmer()
+			}else{
+				binding.loadingLayout.stopShimmer()
+				binding.loadingLayout.visibility = View.GONE
+				binding.main.visibility = View.VISIBLE
+			}
+		})
+
 	}
 }

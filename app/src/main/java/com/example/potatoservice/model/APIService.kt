@@ -1,6 +1,7 @@
 package com.example.potatoservice.model
 
 import com.example.potatoservice.model.remote.AccessTokenRequest
+import com.example.potatoservice.model.remote.ActivityDetail
 import com.example.potatoservice.model.remote.ActivityResponse
 import com.example.potatoservice.model.remote.JwtResponse
 import com.example.potatoservice.model.remote.MarkerData
@@ -12,6 +13,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface APIService {
@@ -55,9 +57,10 @@ interface APIService {
         @Query("category") category: String? = null
     ): Call<ActivityResponse>
 
+    @GET("/api/v1/activities/{activity_id}")
+    fun getActivityDetail(
+        @Path("activity_id") activityId: Int
+    ): Call<ActivityDetail>
 
-
-
-
-
+    
 }
