@@ -5,6 +5,7 @@ import com.example.potatoservice.model.remote.ActivityDetail
 import com.example.potatoservice.model.remote.ActivityResponse
 import com.example.potatoservice.model.remote.JwtResponse
 import com.example.potatoservice.model.remote.MarkerData
+import com.example.potatoservice.model.remote.SidoGungu
 import com.example.potatoservice.model.remote.UserInfo
 import com.example.potatoservice.model.remote.UserInterest
 import okhttp3.ResponseBody
@@ -52,6 +53,8 @@ interface APIService {
         @Query("page") page: Int,
         @Query("size") size: Int? = null,
         @Query("sort") sort: String? = null,
+        @Query("sidoCode") sidoCode: Int? = null,
+        @Query("sidoGunguCode") sidoGunguCode: Int? = null,
         @Query("beforeDeadlineOnly") beforeDeadlineOnly: Boolean? = null,
         @Query("teenPossibleOnly") teenPossibleOnly: Boolean? = null,
         @Query("category") category: String? = null
@@ -61,6 +64,7 @@ interface APIService {
     fun getActivityDetail(
         @Path("activity_id") activityId: Int
     ): Call<ActivityDetail>
-
-    
+    //시도 목록 받음
+    @GET("/api/v1/districts/sido")
+    fun getSido(): Call<List<SidoGungu>>
 }
