@@ -15,12 +15,16 @@
         android:layout_height="match_parent">
 
         <!-- Kakao MapView -->
+
+        <!-- Current Location Button -->
+
         <com.kakao.vectormap.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="61dp"
+            tools:layout_editor_absoluteY="-100dp" />
 
-        <!-- Current Location Button -->
         <ImageButton
             android:id="@+id/button_current_location"
             android:layout_width="wrap_content"
@@ -39,43 +43,59 @@
             android:id="@+id/infoCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="10dp"
             android:visibility="gone"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/button_current_location"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_current_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_item_volunteer"
                 android:orientation="vertical"
                 android:padding="16dp">
 
                 <!-- 봉사 활동 제목 -->
                 <TextView
                     android:id="@+id/titleText"
-                    android:layout_width="wrap_content"
+                    android:layout_width="245dp"
                     android:layout_height="wrap_content"
-                    android:text="봉사 활동 제목"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
+                    android:textColor="#424242"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <!-- 봉사 활동 세부 정보 -->
+                <!-- 봉사 활동 기관 및 카테고리 -->
+                <TextView
+                    android:id="@+id/service_organization_service_category"
+                    android:layout_width="245dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#424242" />
+
+                <!-- 모집 기간 및 모집 인원 -->
+                <TextView
+                    android:id="@+id/service_recruitment"
+                    android:layout_width="245dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#424242" />
+
+                <!-- 활동 기간 및 시간 -->
+                <TextView
+                    android:id="@+id/service_time"
+                    android:layout_width="245dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="#424242" />
+
+                <!-- 활동 위치 -->
                 <TextView
                     android:id="@+id/descriptionText"
-                    android:layout_width="wrap_content"
+                    android:layout_width="245dp"
                     android:layout_height="wrap_content"
-                    android:text="세부 정보가 여기에 표시됩니다."
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp" />
+                    android:textColor="#424242" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </layout>

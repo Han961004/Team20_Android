@@ -1,9 +1,12 @@
 package com.example.potatoservice.module
 
+
 import com.example.potatoservice.ui.detail.DetailRepository
 import com.example.potatoservice.ui.detail.DetailSearchData
 import com.example.potatoservice.ui.home.HomeRepository
 import com.example.potatoservice.ui.home.HomeSearchData
+import com.example.potatoservice.ui.share.SpinnerDataSource
+import com.example.potatoservice.ui.share.SpinnerRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +26,12 @@ object RepositoryModule {
 	@Singleton
 	fun provideDetailRepository(detailSearchData: DetailSearchData): DetailRepository {
 		return DetailRepository(detailSearchData)
+	}
+
+	@Provides
+	@Singleton
+	fun provideSpinnerRepository(spinnerDataSource: SpinnerDataSource): SpinnerRepository {
+		return SpinnerRepository(spinnerDataSource)
 	}
 
 }

@@ -82,6 +82,11 @@ class MapFragment : Fragment() {
                     )
                 }
 
+                // 지도 클릭 리스너 추가
+                kakaoMap.setOnMapClickListener { _, _, _, _ ->
+                    hideCardView()
+                }
+
                 mapViewModel.setMarkerData()
                 mapViewModel.markerDataList.observe(viewLifecycleOwner) { markerDataList ->
                     markerDataList?.let {
@@ -95,6 +100,9 @@ class MapFragment : Fragment() {
                         showCardView()
                     } ?: hideCardView()
                 }
+                // 디테일에서 기관 정보 얻음
+                getInstituteLocation(kakaoMap)
+
             }
         })
     }
@@ -118,13 +126,12 @@ class MapFragment : Fragment() {
         }
     }
 
-
-
-
-
     // 카드뷰에 정보를 업데이트하는 함수
     private fun updateCardView(markerData: MarkerData) {
         binding.titleText.text = markerData.title
+        binding.serviceOrganizationServiceCategory.text = "${markerData.organization}"
+        binding.serviceRecruitment.text = "${markerData.recruitmentPeriod} | 모집 인원: ${markerData.recruitmentCount}"
+        binding.serviceTime.text = "${markerData.activityPeriod} | 활동 시간: ${markerData.activityTime}"
         binding.descriptionText.text = "${markerData.address} \n${markerData.description}"
     }
 
@@ -141,6 +148,18 @@ class MapFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    //디테일에서 기관 정보 얻음
+    private fun getInstituteLocation(kakaoMap: KakaoMap) {
+        val name = this.arguments?.getString("name") ?: "기관명"
+        val latitude = this.arguments?.getDouble("latitude")
+        val longitude = this.arguments?.getDouble("longitude")
+        //기관 정보가 있으면
+        if (latitude != null && longitude != null) {
+            val latLng = LatLng.from(latitude, longitude)
+            mapViewModel.addInstituteMarker(kakaoMap, latLng, name)
+            mapViewModel.moveInstitute(kakaoMap, latLng)
+        }
     }
 
 

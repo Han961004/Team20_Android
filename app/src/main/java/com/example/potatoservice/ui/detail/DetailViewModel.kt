@@ -3,10 +3,12 @@ package com.example.potatoservice.ui.detail
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +17,9 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
 	application: Application,
+
 	private val repository: DetailRepository
+
 ): AndroidViewModel(application){
 	//리뷰 퍼센트지 값
 	var review1 = "50"

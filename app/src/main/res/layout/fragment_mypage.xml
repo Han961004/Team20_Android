@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/base_gray"
+
     tools:context=".MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,6 +51,7 @@
             android:layout_marginTop="8dp"
             android:max="100"
             android:progressBackgroundTint="@color/base_gray"
+
             app:layout_constraintEnd_toEndOf="@id/tvProgressPercent"
             app:layout_constraintStart_toEndOf="@id/lvStageImage"
             app:layout_constraintTop_toBottomOf="@id/tvLevel" />
@@ -145,6 +147,7 @@
         android:id="@+id/tvStatus2"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+
         android:background="@drawable/bg_mypage_tvstatus2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvStatus">
@@ -168,6 +171,7 @@
             android:id="@+id/myPageSpinner"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -181,6 +185,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/base_gray"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

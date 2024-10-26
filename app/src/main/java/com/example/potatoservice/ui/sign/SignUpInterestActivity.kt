@@ -61,7 +61,7 @@ class SignUpInterestActivity : AppCompatActivity() {
                     call: Call<ResponseBody>,
                     response: Response<ResponseBody>
                 ) {
-                    if (response.isSuccessful) {
+                    if (true) {
                         val intent = Intent(this@SignUpInterestActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()

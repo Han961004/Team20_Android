@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.potatoservice.R
 import com.example.potatoservice.databinding.FragmentMypageBinding
 import com.example.potatoservice.ui.share.Volunteer
 
@@ -34,6 +35,7 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         myPageViewModel = ViewModelProvider(this, factory).get(MyPageViewModel::class.java)
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         binding.myPageSpinner.adapter = myPageViewModel.vmSpinnerAdapter
+
         dialogArray = myPageViewModel.vmDialogArray
 
         return binding.root
@@ -42,10 +44,12 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         myPageViewModel.setVolunteerHours()
         myPageViewModel.setVolunteerCount()
         myPageViewModel.setRecyclerViewCount()
         setUpInit()
+
     }
 
     private fun setUpInit(){
@@ -55,6 +59,7 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         setupTvTotalHours()
         setupTvTotalCount()
         setupRecyclerViewCount()
+
     }
 
     // ProgressBar 설정 함수
@@ -63,6 +68,7 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         myPageViewModel.progress.observe(viewLifecycleOwner) { progress ->
             binding.progressBar.progress = progress
         }
+
         myPageViewModel.progressPercent.observe(viewLifecycleOwner){
             binding.tvProgressPercent.text = "${it}%"
         }
@@ -83,17 +89,20 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
     }
 
     // 레벨 설정
+
     private fun setupTvLevel(){
         myPageViewModel.vmLevel.observe(viewLifecycleOwner, Observer {
             binding.tvLevel.text = "Lv. ${it}"
         })
     }
 
+
     private fun setupRecyclerViewCount(){
         myPageViewModel.vmRecyclerViewCount.observe(viewLifecycleOwner, Observer {
             binding.mypageRecyclerViewCount.text = "총 ${it}건"
         })
     }
+
 
 
 

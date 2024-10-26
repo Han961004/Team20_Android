@@ -1,5 +1,6 @@
 package com.example.potatoservice.ui.home
 
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.potatoservice.model.remote.Activity
@@ -18,11 +19,13 @@ class HomeRepository @Inject constructor(
 	//로딩 중인지 알려주는 변수
 	private val _loading = MutableLiveData<Boolean>()
 	val loading: LiveData<Boolean> get() = _loading
+	var numberOfElements = MutableLiveData<Int>()
 	fun search(request: Request) {
 		_loading.value = true
 		homeSearchData.search(request, object : HomeSearchData.LoadCallback {
-			override fun onLoaded(activities: List<Activity>) {
+			override fun onLoaded(activities: List<Activity>, numberOfElements:Int) {
 				_activityList.value = activities
+				this@HomeRepository.numberOfElements.value = numberOfElements
 				_loading.value = false
 			}
 
