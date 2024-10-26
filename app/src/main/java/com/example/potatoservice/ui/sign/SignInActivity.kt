@@ -1,6 +1,8 @@
 package com.example.potatoservice.ui.sign
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +13,8 @@ import com.example.potatoservice.MainActivity
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivitySignInBinding
 import com.example.potatoservice.model.RetrofitClient
+import com.example.potatoservice.model.remote.AccessTokenRequest
+import com.example.potatoservice.model.remote.JwtResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,14 +34,13 @@ class SignInActivity : AppCompatActivity() {
     private fun tryLoginKakao() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
-                // 로그인 실패
                 Log.e("testt", "Login failed: ${error.message}")
             } else if (token != null) {
-                // 로그인 성공
                 Log.d("testt", "Login successful, token: ${token.accessToken}")
 
-                // 토큰을 서버에 보내서 회원가입 여부 확인
-                checkIfUserIsRegistered(token.accessToken)
+                // 토큰을 서버에 보내서 JWT 받기
+                sendKakaoAccessTokenToServer(token.accessToken)
+
             }
         }
 
@@ -50,34 +53,39 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    // 서버에 카카오 토큰을 보내 회원가입 여부 확인하는 함수
-    private fun checkIfUserIsRegistered(kakaoAccessToken: String) {
-        // Retrofit 인스턴스를 통해 API 호출
-        val apiService = RetrofitClient.apiService
+    // 서버에 액세스 토큰을 보내고 JWT를 받아오는 함수
+    private fun sendKakaoAccessTokenToServer(kakaoAccessToken: String) {
+        val request = AccessTokenRequest(accessToken = kakaoAccessToken)
 
-        // 서버에 해당 사용자가 회원가입 되어 있는지 요청
-        apiService.isUserRegistered(kakaoAccessToken).enqueue(object : Callback<Boolean> {
-            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
+        RetrofitClient.apiService.sendKakaoAccessToken(request).enqueue(object : Callback<JwtResponse> {
+            override fun onResponse(call: Call<JwtResponse>, response: Response<JwtResponse>) {
                 if (response.isSuccessful) {
-                    val isRegistered = response.body() ?: false
-                    if (isRegistered) {
-                        // 사용자가 회원가입 되어 있으면 MainActivity로 이동
-                        val intent = Intent(this@SignInActivity, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        // 사용자가 회원가입 안 되어 있으면 SignUpInfoActivity로 이동
-                        val intent = Intent(this@SignInActivity, SignUpInfoActivity::class.java)
-                        startActivity(intent)
-                    }
-                    finish()  // 현재 Activity 종료
+                    // JWT 수신 성공
+                    val jwtToken = response.body()?.jwtToken
+                    Log.d("testt", "JWT Token received: $jwtToken")
+
+                    // SharedPreferences에 JWT 토큰 저장
+                    val sharedPreferences: SharedPreferences = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("jwt_token", jwtToken)
+                    editor.apply()
+
+                    // MainActivity로 이동
+                    startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                    finish()
+
                 } else {
-                    Log.e("testt", "서버 에러: ${response.code()}")
+                    // 서버 응답이 실패한 경우
+                    Log.e("testt", "Failed to get JWT, response code: ${response.code()}")
                 }
             }
 
-            override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                Log.e("testt", "요청 실패: ${t.message}")
+            override fun onFailure(call: Call<JwtResponse>, t: Throwable) {
+                // 네트워크 오류 등의 실패
+                Log.e("testt", "Error in API call: ${t.message}")
             }
         })
     }
+
+
 }
