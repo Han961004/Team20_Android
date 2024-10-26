@@ -9,3 +9,11 @@ data class UserInfo(
 data class UserInterest(
     val interests: List<String>
 )
+
+data class AccessTokenRequest(
+    val accessToken: String
+)
+
+data class JwtResponse(
+    val jwtToken: String
+)

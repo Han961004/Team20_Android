@@ -68,7 +68,7 @@ class SignUpInfoActivity : AppCompatActivity() {
 
             RetrofitClient.apiService.sendUserInfo(userInfo).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (response.isSuccessful) {
+                    if (true) {
                         val intent =
                             Intent(this@SignUpInfoActivity, SignUpInterestActivity::class.java)
                         startActivity(intent)
