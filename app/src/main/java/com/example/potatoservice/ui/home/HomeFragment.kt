@@ -48,6 +48,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             val size: Int? = null
             val teenPossibleOnly: Boolean? = null
             val category: String? = null
+            getBeforeDeadlineOnly()
             //군구 코드가 있으면 시도 코드 자리를 널로 함.
             val request = if(gunguCode != null) {
                 Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
@@ -56,8 +57,19 @@ class HomeFragment : Fragment(), AdapterCallback {
             }
             homeViewModel.search(request)
         }
+
         getNumberOfElements()
         return binding.root
+    }
+
+    //마감 버튼 클릭 확인
+    private fun getBeforeDeadlineOnly(){
+        //마감 제외 버튼
+        beforeDeadlineOnly = if (binding.beforeDeadlindOnlyButton.isChecked){
+            true
+        }else{
+            null
+        }
     }
     //검색 결과 개수 업데이트
     private fun getNumberOfElements(){
