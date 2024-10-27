@@ -48,4 +48,43 @@ class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 			}
 		)
 	}
+	//군구 리스트 받기
+	private val _gunguList = MutableLiveData<List<SidoGungu>>()
+	val gunguList get() = _gunguList
+	private val _gunguLoading = MutableLiveData(true)
+	val gunguLoading get() = _gunguLoading
+	fun getGunguList() {
+		apiService.getGungu().enqueue(
+			object : Callback<List<SidoGungu>>{
+				override fun onResponse(
+					call: Call<List<SidoGungu>>,
+					response: Response<List<SidoGungu>>
+				) {
+					if (response.isSuccessful){
+						_gunguList.value = response.body()?.map { sidoGungu ->
+							SidoGungu(
+								sidoGungu.sidoGunguCode,
+								sidoGungu.sidoCode,
+								sidoGungu.sidoName,
+								sidoGungu.gunguName,
+								sidoGungu.sido
+							)
+						}
+						_gunguLoading.value = false
+					}else{
+						Log.e("testt", "onResponse fail: ${response.code()}")
+						_gunguList.value = emptyList()
+						_gunguLoading.value = false
+					}
+				}
+
+				override fun onFailure(call: Call<List<SidoGungu>>, t: Throwable) {
+					Log.e("testt", "onFailure: ${t.message}")
+					_gunguList.value = emptyList()
+					_gunguLoading.value = false
+				}
+
+			}
+		)
+	}
 }

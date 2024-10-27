@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 
-class SpinnerHintAdapter(context: Context, resource: Int, objects: List<String>) :
+class SpinnerHintAdapter(context: Context, resource: Int, objects: MutableList<String>) :
     ArrayAdapter<String>(context, resource, objects) {
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View? {

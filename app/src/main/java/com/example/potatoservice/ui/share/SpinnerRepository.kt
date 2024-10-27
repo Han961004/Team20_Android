@@ -12,4 +12,10 @@ class SpinnerRepository @Inject constructor(private val spinnerDataSource: Spinn
 	fun searchSidoList(){
 		spinnerDataSource.getSidoList()
 	}
+	//군구 데이터 받기
+	val gunguList : LiveData<List<SidoGungu>> = spinnerDataSource.gunguList
+	val gunguLoading : LiveData<Boolean> = spinnerDataSource.gunguLoading
+	fun searchGunguList(){
+		spinnerDataSource.getGunguList()
+	}
 }

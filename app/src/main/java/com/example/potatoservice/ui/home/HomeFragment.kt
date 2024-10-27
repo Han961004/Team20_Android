@@ -26,6 +26,10 @@ class HomeFragment : Fragment(), AdapterCallback {
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
     var numberOfElements: Int = 0
+    //지역 소분류 지명 리스트
+    private var minorRegoinList = mutableListOf("지역 소분류")
+    // 지역 소분류 군구 코드 리스트 저장
+    private var minorGunguCodeList = mutableListOf<Int>(0)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -105,6 +109,8 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setSpinner() {
         //시도 리스트 받아 오기
         homeViewModel.searchSidoList()
+        //군구 리스트 받아 오기
+        homeViewModel.searchGunguList()
         // 정렬 스피너 설정
         val sortAdapter = ArrayAdapter(
             requireContext(),
@@ -150,16 +156,19 @@ class HomeFragment : Fragment(), AdapterCallback {
                         id: Long
                     ) {
                         //지역 대분류 선택 시 선택된 시도 코드 저장
-                        sidoCode = if (position != 0){
-                            majorSidoCodeList[position]
-                        }else{
-                            null
-                        }
                         //지역 대분류 선택에 따라 소분류 목록이 바뀜
+                        var majorSidoCode: Int? = 0
+                        if (position != 0){
+                            sidoCode = majorSidoCodeList[position]
+                            majorSidoCode = sidoCode
+                        }else{
+                            sidoCode = null
+                        }
+
                         val minorRegionAdapter =SpinnerHintAdapter(
                             requireContext(),
                             com.example.potatoservice.R.layout.spinner_item,
-                            homeViewModel.minorRegoinList[position]
+                            homeViewModel.mappingGunguCode()[majorSidoCode]!!
                         )
                         minorRegionAdapter.setDropDownViewResource(
                             com.example.potatoservice.R.layout.spinner_item_dropdown)
@@ -173,12 +182,11 @@ class HomeFragment : Fragment(), AdapterCallback {
                 }
         })
 
-
         //지역 소분류 스피너 설정
         val minorRegionAdapter =SpinnerHintAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.minorRegoinList[0]
+            homeViewModel.mappingGunguCode()[0]!!
         )
         minorRegionAdapter.setDropDownViewResource(
             com.example.potatoservice.R.layout.spinner_item_dropdown)
