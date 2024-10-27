@@ -15,10 +15,13 @@ import com.example.potatoservice.ui.detail.DetailActivity
 import com.example.potatoservice.ui.share.AdapterCallback
 import com.example.potatoservice.ui.share.Request
 import com.example.potatoservice.ui.share.SpinnerHintAdapter
+import com.example.potatoservice.ui.share.SpinnerSort
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), AdapterCallback {
+    //선택된 정렬 코드 값
+    private var sortCode: String? = null
     //선택된 시도 코드 값
     private var sidoCode: Int? = null
     //선택된 군구 코드 값
@@ -27,6 +30,7 @@ class HomeFragment : Fragment(), AdapterCallback {
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
     var numberOfElements: Int = 0
+    private var beforeDeadlineOnly: Boolean? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,15 +46,22 @@ class HomeFragment : Fragment(), AdapterCallback {
         binding.searchButton.setOnClickListener {
             val page = 0
             val size: Int? = null
-            val sort: String? = null
-            val beforeDeadlineOnly: Boolean? = null
             val teenPossibleOnly: Boolean? = null
             val category: String? = null
             //군구 코드가 있으면 시도 코드 자리를 널로 함.
             val request = if(gunguCode != null) {
-                Request(page, size, sort, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+                //정렬 코드가 마감 임박일 때 마감 되지 않은 봉사만 보임.
+                if (sortCode == "noticeEndDate,actId"){
+                    Request(page, size, sortCode, null, gunguCode,true, teenPossibleOnly, category)
+                }else{
+                    Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+                }
             } else{
-                Request(page, size, sort, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
+                if (sortCode == "noticeEndDate,actId"){
+                    Request(page, size, sortCode, null, gunguCode,true, teenPossibleOnly, category)
+                }else{
+                    Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+                }
             }
             homeViewModel.search(request)
         }
@@ -64,6 +75,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             binding.invalidateAll()
         })
     }
+
     //검색 로딩 화면 설정
     private fun showSearchLoading() {
         homeViewModel.searchLoading.observe(viewLifecycleOwner, Observer { loading ->
@@ -79,6 +91,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         })
 
     }
+
     //초기 스피너 설정 시 로딩 화면 구현
     private fun showSpinnerLoading() {
         homeViewModel.sidoLoading.observe(viewLifecycleOwner, Observer { sidoLoading ->
@@ -125,11 +138,12 @@ class HomeFragment : Fragment(), AdapterCallback {
         homeViewModel.searchSidoList()
         //군구 리스트 받아 오기
         homeViewModel.searchGunguList()
+
         // 정렬 스피너 설정
         val sortAdapter = ArrayAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.sortList
+            SpinnerSort.sortList
         )
         sortAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.sort.adapter = sortAdapter
@@ -141,10 +155,13 @@ class HomeFragment : Fragment(), AdapterCallback {
                 position: Int,
                 id: Long
             ) {
+                sortCode = SpinnerSort.sortCode[position]
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
+
+        //지역 대분류 스피너 설정
         homeViewModel.sidoList.observe(viewLifecycleOwner, Observer {sidoGunguList ->
             //지역 대분류 시도 이름 리스트 저장
             val majorRegoinList = mutableListOf("지역 대분류")

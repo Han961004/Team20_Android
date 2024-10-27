@@ -21,8 +21,6 @@ class HomeViewModel @Inject constructor(
 	val activityList:LiveData<List<Activity>> get() = homeRepository.activityList.asLiveData()
 	val numberOfElements:LiveData<Int> get() = homeRepository.numberOfElements
 
-	//정렬
-	val sortList = listOf("최신순", "거리순", "마감 임박순")
 	//봉사 분야
 	val volunteerList = mutableListOf("봉사 분야", "생활지원 및 주거환경 개선", "교육 및 멘토링", "행정 및 사무지원",
 		"문화, 환경 및 국제협력 활동", "보건의료 및 공익활동", "상담 및 자원봉사 교육", "기타 활동")
@@ -42,7 +40,7 @@ class HomeViewModel @Inject constructor(
 	}
 	//지역 대분류
 	val sidoList:LiveData<List<SidoGungu>> = spinnerRepository.sidoList
-	val sidoLodaing:LiveData<Boolean> = spinnerRepository.sidoLoading
+	val sidoLoading:LiveData<Boolean> = spinnerRepository.sidoLoading
 	fun searchSidoList(){
 		spinnerRepository.searchSidoList()
 	}
@@ -69,6 +67,8 @@ class HomeViewModel @Inject constructor(
 		}
 		return gunguCodeMap
 	}
+
+
 
 	
 }
