@@ -50,18 +50,9 @@ class HomeFragment : Fragment(), AdapterCallback {
             val category: String? = null
             //군구 코드가 있으면 시도 코드 자리를 널로 함.
             val request = if(gunguCode != null) {
-                //정렬 코드가 마감 임박일 때 마감 되지 않은 봉사만 보임.
-                if (sortCode == "noticeEndDate,actId"){
-                    Request(page, size, sortCode, null, gunguCode,true, teenPossibleOnly, category)
-                }else{
-                    Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
-                }
+                Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
             } else{
-                if (sortCode == "noticeEndDate,actId"){
-                    Request(page, size, sortCode, null, gunguCode,true, teenPossibleOnly, category)
-                }else{
-                    Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
-                }
+                Request(page, size, sortCode, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
             }
             homeViewModel.search(request)
         }
