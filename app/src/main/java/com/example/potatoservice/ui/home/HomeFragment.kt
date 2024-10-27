@@ -1,7 +1,6 @@
 package com.example.potatoservice.ui.home
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -82,8 +81,21 @@ class HomeFragment : Fragment(), AdapterCallback {
     }
     //초기 스피너 설정 시 로딩 화면 구현
     private fun showSpinnerLoading() {
-        homeViewModel.sidoLodaing.observe(viewLifecycleOwner, Observer { sidoLoading ->
-            if(sidoLoading){
+        homeViewModel.sidoLoading.observe(viewLifecycleOwner, Observer { sidoLoading ->
+            if(sidoLoading or homeViewModel.gunguLoading.value!!){
+                //로딩 시작
+                binding.homeLayout.visibility = View.GONE
+                binding.loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.startShimmer()
+            }else{
+                //로딩 종료
+                binding.loadingLayout.stopShimmer()
+                binding.loadingLayout.visibility = View.GONE
+                binding.homeLayout.visibility = View.VISIBLE
+            }
+        })
+        homeViewModel.gunguLoading.observe(viewLifecycleOwner, Observer { gunguLoading ->
+            if(gunguLoading or homeViewModel.sidoLoading.value!!){
                 //로딩 시작
                 binding.homeLayout.visibility = View.GONE
                 binding.loadingLayout.visibility = View.VISIBLE
