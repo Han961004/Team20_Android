@@ -22,14 +22,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeFragment : Fragment(), AdapterCallback {
     //선택된 시도 코드 값
     private var sidoCode: Int? = null
+    //선택된 군구 코드 값
+    private var gunguCode: Int? = null
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
     var numberOfElements: Int = 0
-    //지역 소분류 지명 리스트
-    private var minorRegoinList = mutableListOf("지역 소분류")
-    // 지역 소분류 군구 코드 리스트 저장
-    private var minorGunguCodeList = mutableListOf<Int>(0)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,11 +44,15 @@ class HomeFragment : Fragment(), AdapterCallback {
             val page = 0
             val size: Int? = null
             val sort: String? = null
-            val sidoGunguCode: Int? = null
             val beforeDeadlineOnly: Boolean? = null
             val teenPossibleOnly: Boolean? = null
             val category: String? = null
-            val request = Request(page, size, sort, sidoCode, sidoGunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+            //군구 코드가 있으면 시도 코드 자리를 널로 함.
+            val request = if(gunguCode != null) {
+                Request(page, size, sort, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+            } else{
+                Request(page, size, sort, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
+            }
             homeViewModel.search(request)
         }
         getNumberOfElements()
@@ -156,7 +158,6 @@ class HomeFragment : Fragment(), AdapterCallback {
                         id: Long
                     ) {
                         //지역 대분류 선택 시 선택된 시도 코드 저장
-                        //지역 대분류 선택에 따라 소분류 목록이 바뀜
                         var majorSidoCode: Int? = 0
                         if (position != 0){
                             sidoCode = majorSidoCodeList[position]
@@ -164,11 +165,14 @@ class HomeFragment : Fragment(), AdapterCallback {
                         }else{
                             sidoCode = null
                         }
-
+                        //지역 대분류 선택에 따라 소분류 목록이 바뀜
+                        val minorRegionList = homeViewModel.mappingGunguCode()[majorSidoCode]?.map {list->
+                            list[0] as String
+                        }
                         val minorRegionAdapter =SpinnerHintAdapter(
                             requireContext(),
                             com.example.potatoservice.R.layout.spinner_item,
-                            homeViewModel.mappingGunguCode()[majorSidoCode]!!
+                            minorRegionList
                         )
                         minorRegionAdapter.setDropDownViewResource(
                             com.example.potatoservice.R.layout.spinner_item_dropdown)
@@ -186,7 +190,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         val minorRegionAdapter =SpinnerHintAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.mappingGunguCode()[0]!!
+            homeViewModel.mappingGunguCode()[0]?.get(0) as List<String>
         )
         minorRegionAdapter.setDropDownViewResource(
             com.example.potatoservice.R.layout.spinner_item_dropdown)
@@ -200,6 +204,11 @@ class HomeFragment : Fragment(), AdapterCallback {
                     position: Int,
                     id: Long
                 ) {
+                    gunguCode = if (position != 0){
+                        homeViewModel.mappingGunguCode()[sidoCode]?.get(position)?.get(1) as Int
+                    }else{
+                        null
+                    }
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }

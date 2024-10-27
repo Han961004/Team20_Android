@@ -1,7 +1,6 @@
 package com.example.potatoservice.ui.share
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.potatoservice.model.remote.SidoGungu
 import javax.inject.Inject
 
