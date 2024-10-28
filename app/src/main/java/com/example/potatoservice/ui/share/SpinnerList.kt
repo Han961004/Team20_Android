@@ -6,4 +6,6 @@ object SpinnerList {
 	val sortList = listOf("최신순", "마감 임박순")
 	//나이 제한
 	val ageList = listOf("나이 제한 없음", "청소년도 가능")
+	//카테고리 맵
+	var categoryMap: MutableMap<String, String> = mutableMapOf()
 }

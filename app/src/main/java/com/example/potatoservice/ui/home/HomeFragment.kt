@@ -269,6 +269,11 @@ class HomeFragment : Fragment(), AdapterCallback {
             categoryNameList.addAll(categoryList.map { category -> category.categoryName })
             val categoryCodeList = mutableListOf<String>("")
             categoryCodeList.addAll(categoryList.map { category -> category.categoryCode })
+            //HomeSearchDataSource에서 사용할 categoryMap 생성
+            SpinnerList.categoryMap = mutableMapOf("null" to "봉사 분야")
+            categoryList.forEach { category ->
+                SpinnerList.categoryMap[category.categoryCode] = category.categoryName
+            }
             val volunteerActivitiesAdapter = SpinnerHintAdapter(
                 requireContext(),
                 com.example.potatoservice.R.layout.spinner_item,
