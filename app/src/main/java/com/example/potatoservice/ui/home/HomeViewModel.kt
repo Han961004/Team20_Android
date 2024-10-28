@@ -28,8 +28,7 @@ class HomeViewModel @Inject constructor(
 	val volunteerListAPI = listOf("LIFE_SUPPORT_AND_HOUSING_IMPROVEMENT", "EDUCATION_AND_MENTORING",
 		"ADMINISTRATIVE_AND_OFFICE_SUPPORT", "CULTURE_ENVIRONMENT_AND_INTERNATIONAL_COOPERATION",
 		"HEALTHCARE_AND_PUBLIC_WELFARE", "COUNSELING_AND_VOLUNTEER_TRAINING", "OTHER_ACTIVITIES")
-	//나이 제한
-	val ageList = mutableListOf("나이 제한 없음", "청소년만", "성인만")
+
 	//검색 결과 로딩 변수
 	val searchLoading = homeRepository.loading
 	//검색 기능

@@ -15,7 +15,7 @@ import com.example.potatoservice.ui.detail.DetailActivity
 import com.example.potatoservice.ui.share.AdapterCallback
 import com.example.potatoservice.ui.share.Request
 import com.example.potatoservice.ui.share.SpinnerHintAdapter
-import com.example.potatoservice.ui.share.SpinnerSort
+import com.example.potatoservice.ui.share.SpinnerList
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -26,6 +26,8 @@ class HomeFragment : Fragment(), AdapterCallback {
     private var sidoCode: Int? = null
     //선택된 군구 코드 값
     private var gunguCode: Int? = null
+    //선택된 나이 제한 값
+    private var teenPossibleOnly: Boolean? = null
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
@@ -46,7 +48,6 @@ class HomeFragment : Fragment(), AdapterCallback {
         binding.searchButton.setOnClickListener {
             val page = 0
             val size: Int? = null
-            val teenPossibleOnly: Boolean? = null
             val category: String? = null
             getBeforeDeadlineOnly()
             //군구 코드가 있으면 시도 코드 자리를 널로 함.
@@ -146,7 +147,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         val sortAdapter = ArrayAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            SpinnerSort.sortList
+            SpinnerList.sortList
         )
         sortAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.sort.adapter = sortAdapter
@@ -158,7 +159,7 @@ class HomeFragment : Fragment(), AdapterCallback {
                 position: Int,
                 id: Long
             ) {
-                sortCode = SpinnerSort.sortCode[position]
+                sortCode = SpinnerList.sortCode[position]
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
@@ -280,7 +281,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         val ageAdapter = SpinnerHintAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.ageList
+            SpinnerList.ageList
         )
         ageAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.ageCategories.adapter = ageAdapter
@@ -292,7 +293,11 @@ class HomeFragment : Fragment(), AdapterCallback {
                 position: Int,
                 id: Long
             ) {
-
+                teenPossibleOnly = if (position != 0) {
+                    true
+                } else {
+                    null
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
