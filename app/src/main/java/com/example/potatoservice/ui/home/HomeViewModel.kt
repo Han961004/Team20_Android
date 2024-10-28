@@ -20,15 +20,8 @@ class HomeViewModel @Inject constructor(
 ): AndroidViewModel(application) {
 
 	val activityList:LiveData<List<Activity>> get() = homeRepository.activityList.asLiveData()
+	//검색 결과 개수
 	val numberOfElements:LiveData<Int> get() = homeRepository.numberOfElements
-
-	//봉사 분야
-	val volunteerList = mutableListOf("봉사 분야", "생활지원 및 주거환경 개선", "교육 및 멘토링", "행정 및 사무지원",
-		"문화, 환경 및 국제협력 활동", "보건의료 및 공익활동", "상담 및 자원봉사 교육", "기타 활동")
-	//봉사 분야 API 이름
-	val volunteerListAPI = listOf("LIFE_SUPPORT_AND_HOUSING_IMPROVEMENT", "EDUCATION_AND_MENTORING",
-		"ADMINISTRATIVE_AND_OFFICE_SUPPORT", "CULTURE_ENVIRONMENT_AND_INTERNATIONAL_COOPERATION",
-		"HEALTHCARE_AND_PUBLIC_WELFARE", "COUNSELING_AND_VOLUNTEER_TRAINING", "OTHER_ACTIVITIES")
 
 	//검색 결과 로딩 변수
 	val searchLoading = homeRepository.loading

@@ -100,7 +100,7 @@ class HomeFragment : Fragment(), AdapterCallback {
     //초기 스피너 설정 시 로딩 화면 구현
     private fun showSpinnerLoading() {
         homeViewModel.sidoLoading.observe(viewLifecycleOwner, Observer { sidoLoading ->
-            if(sidoLoading or homeViewModel.gunguLoading.value!!){
+            if(sidoLoading or homeViewModel.gunguLoading.value!! or homeViewModel.categoryLoading.value!!){
                 //로딩 시작
                 binding.homeLayout.visibility = View.GONE
                 binding.loadingLayout.visibility = View.VISIBLE
@@ -113,7 +113,20 @@ class HomeFragment : Fragment(), AdapterCallback {
             }
         })
         homeViewModel.gunguLoading.observe(viewLifecycleOwner, Observer { gunguLoading ->
-            if(gunguLoading or homeViewModel.sidoLoading.value!!){
+            if(gunguLoading or homeViewModel.sidoLoading.value!! or homeViewModel.categoryLoading.value!!){
+                //로딩 시작
+                binding.homeLayout.visibility = View.GONE
+                binding.loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.startShimmer()
+            }else{
+                //로딩 종료
+                binding.loadingLayout.stopShimmer()
+                binding.loadingLayout.visibility = View.GONE
+                binding.homeLayout.visibility = View.VISIBLE
+            }
+        })
+        homeViewModel.categoryLoading.observe(viewLifecycleOwner, Observer { categoryLoading ->
+            if(categoryLoading or homeViewModel.gunguLoading.value!! or homeViewModel.sidoLoading.value!!){
                 //로딩 시작
                 binding.homeLayout.visibility = View.GONE
                 binding.loadingLayout.visibility = View.VISIBLE
