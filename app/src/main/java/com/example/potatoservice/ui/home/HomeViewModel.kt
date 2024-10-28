@@ -3,7 +3,7 @@ package com.example.potatoservice.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.ui.share.Request
@@ -27,8 +27,7 @@ class HomeViewModel @Inject constructor(
 	var status = "확정 상태"
 
 	val activityList:LiveData<List<Activity>> get() = repository.activityList.asLiveData()
-	val searchResultCount = activityList.value?.count()
-	val searchResultCountText = "총 " + searchResultCount.toString() + "건"
+	val numberOfElements:LiveData<Int> get() = repository.numberOfElements
 
 	//정렬
 	val sortList = listOf("최신순", "거리순", "마감 임박순")
@@ -47,6 +46,7 @@ class HomeViewModel @Inject constructor(
 		"HEALTHCARE_AND_PUBLIC_WELFARE", "COUNSELING_AND_VOLUNTEER_TRAINING", "OTHER_ACTIVITIES")
 	//나이 제한
 	val ageList = listOf("나이 제한 없음", "청소년만", "성인만")
+	val loading = repository.loading
 
 	//검색 기능
 	fun search(
