@@ -31,7 +31,8 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import dagger.hilt.android.AndroidEntryPoint
-
+//신청 url
+const val requestUrl = "https://www.1365.go.kr/vols/1572247904127/partcptn/timeCptn.do?type=show&progrmRegistNo="
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 	//봉사 활동 id
@@ -65,6 +66,16 @@ class DetailActivity : AppCompatActivity() {
 				val phoneNumber = detail?.actPhone
 				startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
 			})
+		}
+		//신청하기 버튼
+		binding.requestButton.setOnClickListener {
+			val url = requestUrl + id
+			val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+			if (intent.resolveActivity(packageManager) != null) {
+				startActivity(intent)
+			} else {
+				Toast.makeText(this, "웹 브라우저 앱을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+			}
 		}
 
 		//지도 기능들
