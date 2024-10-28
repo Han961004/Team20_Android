@@ -112,3 +112,8 @@ data class SidoGungu(
     val gunguName: String?,
     val sido: Boolean
 )
+//봉사활동 카테고리 테이터 클래스
+data class Category(
+    val categoryCode:String,
+    val categoryName:String
+)

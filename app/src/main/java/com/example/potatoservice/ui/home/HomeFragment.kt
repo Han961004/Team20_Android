@@ -26,6 +26,8 @@ class HomeFragment : Fragment(), AdapterCallback {
     private var sidoCode: Int? = null
     //선택된 군구 코드 값
     private var gunguCode: Int? = null
+    //선택된 카테고리 코드 값
+    private var category: String? = null
     //선택된 나이 제한 값
     private var teenPossibleOnly: Boolean? = null
     private lateinit var binding: FragmentHomeBinding
@@ -48,7 +50,6 @@ class HomeFragment : Fragment(), AdapterCallback {
         binding.searchButton.setOnClickListener {
             val page = 0
             val size: Int? = null
-            val category: String? = null
             getBeforeDeadlineOnly()
             //군구 코드가 있으면 시도 코드 자리를 널로 함.
             val request = if(gunguCode != null) {
@@ -142,7 +143,8 @@ class HomeFragment : Fragment(), AdapterCallback {
         homeViewModel.searchSidoList()
         //군구 리스트 받아 오기
         homeViewModel.searchGunguList()
-
+        //카테고리 리스트 받아 오기
+        homeViewModel.searchCategoryList()
         // 정렬 스피너 설정
         val sortAdapter = ArrayAdapter(
             requireContext(),
@@ -249,32 +251,41 @@ class HomeFragment : Fragment(), AdapterCallback {
 
 
         // 봉사 분야 스피너 설정
-        val volunteerActivitiesAdapter = SpinnerHintAdapter(
-            requireContext(),
-            com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.volunteerList
-        )
-        volunteerActivitiesAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
-        binding.volunteerActivitiesCategories.adapter = volunteerActivitiesAdapter
-        //봉사 분야 선택 시
-        binding.volunteerActivitiesCategories.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    if (position != 0) {
+        homeViewModel.categoryList.observe(viewLifecycleOwner, Observer { categoryList ->
+            val categoryNameList = mutableListOf("봉사 분야")
+            categoryNameList.addAll(categoryList.map { category -> category.categoryName })
+            val categoryCodeList = mutableListOf<String>("")
+            categoryCodeList.addAll(categoryList.map { category -> category.categoryCode })
+            val volunteerActivitiesAdapter = SpinnerHintAdapter(
+                requireContext(),
+                com.example.potatoservice.R.layout.spinner_item,
+                categoryNameList
+            )
+            volunteerActivitiesAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
+            binding.volunteerActivitiesCategories.adapter = volunteerActivitiesAdapter
+            //봉사 분야 선택 시
+            binding.volunteerActivitiesCategories.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (position != 0) {
+                            category = categoryCodeList[position]
+                        }else{
+                            category = null
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
 
                     }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
 
                 }
+        })
 
-            }
 
 
         // 나이 제한 스피너 설정

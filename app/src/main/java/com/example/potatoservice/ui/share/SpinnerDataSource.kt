@@ -3,6 +3,7 @@ package com.example.potatoservice.ui.share
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.potatoservice.model.APIService
+import com.example.potatoservice.model.remote.Category
 import com.example.potatoservice.model.remote.SidoGungu
 import retrofit2.Call
 import retrofit2.Callback
@@ -33,14 +34,14 @@ class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 						}
 						_sidoLoading.value = false
 					}else{
-						Log.e("testt", "onResponse fail: ${response.code()}")
+						Log.e("testt", "sido onResponse fail: ${response.code()}")
 						_sidoList.value = emptyList()
 						_sidoLoading.value = false
 					}
 				}
 
 				override fun onFailure(call: Call<List<SidoGungu>>, t: Throwable) {
-					Log.e("testt", "onFailure: ${t.message}")
+					Log.e("testt", "sido onFailure: ${t.message}")
 					_sidoList.value = emptyList()
 					_sidoLoading.value = false
 				}
@@ -72,16 +73,52 @@ class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 						}
 						_gunguLoading.value = false
 					}else{
-						Log.e("testt", "onResponse fail: ${response.code()}")
+						Log.e("testt", "gungu onResponse fail: ${response.code()}")
 						_gunguList.value = emptyList()
 						_gunguLoading.value = false
 					}
 				}
 
 				override fun onFailure(call: Call<List<SidoGungu>>, t: Throwable) {
-					Log.e("testt", "onFailure: ${t.message}")
+					Log.e("testt", "gungu onFailure: ${t.message}")
 					_gunguList.value = emptyList()
 					_gunguLoading.value = false
+				}
+
+			}
+		)
+	}
+	//카테고리 리스트 받기
+	private val _categoryList = MutableLiveData<List<Category>>()
+	val categoryList get() = _categoryList
+	private val _categoryLoading = MutableLiveData(true)
+	val categoryLoading get() = _categoryLoading
+	fun getCategoryList() {
+		apiService.getCategory().enqueue(
+			object : Callback<List<Category>>{
+				override fun onResponse(
+					call: Call<List<Category>>,
+					response: Response<List<Category>>
+				) {
+					if (response.isSuccessful){
+						_categoryList.value = response.body()?.map { category ->
+							Category(
+								category.categoryCode,
+								category.categoryName
+							)
+						}
+						_categoryLoading.value = false
+					}else{
+						Log.e("testt", "category onResponse fail: ${response.code()}")
+						_categoryList.value = emptyList()
+						_categoryLoading.value = false
+					}
+				}
+
+				override fun onFailure(call: Call<List<Category>>, t: Throwable) {
+					Log.e("testt", "category onFailure: ${t.message}")
+					_categoryList.value = emptyList()
+					_categoryLoading.value = false
 				}
 
 			}
