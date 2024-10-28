@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -174,7 +175,15 @@ class DetailActivity : AppCompatActivity() {
 				})
 			}
 		})
+		//스크롤뷰가 지도 터치 간섭 안 하게
+		mapView.surfaceView?.setOnTouchListener(View.OnTouchListener(){
+			view, motionEvent ->
+			binding.scrollView.requestDisallowInterceptTouchEvent(true)
+			false
+		})
 	}
+
+
 	//봉사 활동 장소 마커로 표시
 	private fun setMarker(latLng:LatLng) {
 		val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5))
