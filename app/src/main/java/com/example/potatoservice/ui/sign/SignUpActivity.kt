@@ -5,14 +5,16 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.potatoservice.MainActivity
 import com.example.potatoservice.databinding.ActivitySignupInfoBinding
 import com.example.potatoservice.model.RetrofitClient
-import com.example.potatoservice.model.remote.UserInfo
+import com.example.potatoservice.model.remote.SendSignUpUserInfo
+import com.example.potatoservice.model.remote.SignUpRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SignUpInfoActivity : AppCompatActivity() {
+class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignupInfoBinding
     private var selectedAgeGroup: String? = null
@@ -24,8 +26,7 @@ class SignUpInfoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupSelectionListeners()
-
-        binding.completeButton.setOnClickListener { sendUserInfo() }
+        binding.completeButton.setOnClickListener { sendSignUpUserInfo() }
     }
 
     private fun setupSelectionListeners() {
@@ -34,11 +35,6 @@ class SignUpInfoActivity : AppCompatActivity() {
             binding.highSchoolButton to "고등학생",
             binding.universityButton to "대학생",
             binding.adultButton to "성인"
-        )
-        val experienceButtons = mapOf(
-            binding.firstTimeButton to "처음이에요",
-            binding.someExperienceButton to "몇번해봤어요",
-            binding.lotsExperienceButton to "자주하고있어요"
         )
 
         ageButtons.forEach { (button, string) ->
@@ -49,6 +45,12 @@ class SignUpInfoActivity : AppCompatActivity() {
             }
         }
 
+        val experienceButtons = mapOf(
+            binding.firstTimeButton to "처음이에요",
+            binding.someExperienceButton to "몇번해봤어요",
+            binding.lotsExperienceButton to "자주하고있어요"
+        )
+
         experienceButtons.forEach { (button, interest) ->
             button.setOnClickListener {
                 experienceButtons.keys.forEach { it.isSelected = false }
@@ -58,35 +60,34 @@ class SignUpInfoActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendUserInfo() {
-        val nickname = binding.nicknameEditText.text.toString()
+    private fun sendSignUpUserInfo() {
+        val nickName = binding.nicknameEditText.text.toString()
         val ageGroup = selectedAgeGroup
         val experience = selectedExperience
 
-        if (nickname.isNotEmpty() && !ageGroup.isNullOrEmpty() && !experience.isNullOrEmpty()) {
-            val userInfo = UserInfo(nickname, ageGroup, experience)
+        if (nickName.isNotEmpty() && !ageGroup.isNullOrEmpty() && !experience.isNullOrEmpty()) {
+            val userInfo = SendSignUpUserInfo(nickName, ageGroup, experience)
 
-            RetrofitClient.apiService.sendUserInfo(userInfo).enqueue(object : Callback<Void> {
-                override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                    if (true) {
-                        val intent =
-                            Intent(this@SignUpInfoActivity, SignUpInterestActivity::class.java)
+            // SharedPreferences에서 JWT 토큰 가져오기
+            val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+            val jwtToken = sharedPreferences.getString("jwt_token", null)
+
+            RetrofitClient.apiService().sendUserInfo("Bearer $jwtToken", userInfo).enqueue(object : Callback<SignUpRequest> {
+                override fun onResponse(call: Call<SignUpRequest>, response: Response<SignUpRequest>) {
+                    if (response.isSuccessful) {
+                        Toast.makeText(this@SignUpActivity, "회원가입을 환영합니다, $nickName 님!", Toast.LENGTH_LONG).show()
+                        val intent = Intent(this@SignUpActivity, MainActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
                         Log.d("testt", "Failure Response: ${response.message()}")
-                        Toast.makeText(this@SignUpInfoActivity, "정보 전송 실패", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this@SignUpActivity, "정보 전송 실패", Toast.LENGTH_SHORT).show()
                     }
                 }
 
-                override fun onFailure(call: Call<Void>, t: Throwable) {
+                override fun onFailure(call: Call<SignUpRequest>, t: Throwable) {
                     Log.d("testt", "Request Failed: ${t.message}")
-                    Toast.makeText(
-                        this@SignUpInfoActivity,
-                        "서버 오류: ${t.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@SignUpActivity, "서버 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
             })
         } else {
