@@ -266,14 +266,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         // 봉사 분야 스피너 설정
         homeViewModel.categoryList.observe(viewLifecycleOwner, Observer { categoryList ->
             val categoryNameList = mutableListOf("봉사 분야")
-            categoryNameList.addAll(categoryList.map { category -> category.categoryName })
-            val categoryCodeList = mutableListOf<String>("")
-            categoryCodeList.addAll(categoryList.map { category -> category.categoryCode })
-            //HomeSearchDataSource에서 사용할 categoryMap 생성
-            SpinnerList.categoryMap = mutableMapOf("null" to "봉사 분야")
-            categoryList.forEach { category ->
-                SpinnerList.categoryMap[category.categoryCode] = category.categoryName
-            }
+            categoryNameList.addAll(categoryList)
             val volunteerActivitiesAdapter = SpinnerHintAdapter(
                 requireContext(),
                 com.example.potatoservice.R.layout.spinner_item,
@@ -291,7 +284,7 @@ class HomeFragment : Fragment(), AdapterCallback {
                         id: Long
                     ) {
                         if (position != 0) {
-                            category = categoryCodeList[position]
+                            category = categoryNameList[position]
                         }else{
                             category = null
                         }

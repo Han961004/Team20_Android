@@ -1,7 +1,6 @@
 package com.example.potatoservice.ui.share
 
 import androidx.lifecycle.LiveData
-import com.example.potatoservice.model.remote.Category
 import com.example.potatoservice.model.remote.SidoGungu
 import javax.inject.Inject
 
@@ -19,7 +18,7 @@ class SpinnerRepository @Inject constructor(private val spinnerDataSource: Spinn
 		spinnerDataSource.getGunguList()
 	}
 	//카테고리 데이터 받기
-	val categoryList : LiveData<List<Category>> = spinnerDataSource.categoryList
+	val categoryList : LiveData<List<String>> = spinnerDataSource.categoryList
 	val categoryLoading : LiveData<Boolean> = spinnerDataSource.categoryLoading
 	fun searchCategoryList(){
 		spinnerDataSource.getCategoryList()

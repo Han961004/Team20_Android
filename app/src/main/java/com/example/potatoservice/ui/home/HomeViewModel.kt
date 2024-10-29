@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.example.potatoservice.model.remote.Activity
-import com.example.potatoservice.model.remote.Category
 import com.example.potatoservice.model.remote.SidoGungu
 import com.example.potatoservice.ui.share.Request
 import com.example.potatoservice.ui.share.SpinnerRepository
@@ -61,7 +60,7 @@ class HomeViewModel @Inject constructor(
 		return gunguCodeMap
 	}
 	//봉사 활동 카테고리
-	val categoryList:LiveData<List<Category>> = spinnerRepository.categoryList
+	val categoryList:LiveData<List<String>> = spinnerRepository.categoryList
 	val categoryLoading:LiveData<Boolean> = spinnerRepository.categoryLoading
 	fun searchCategoryList(){
 		spinnerRepository.searchCategoryList()

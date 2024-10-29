@@ -25,7 +25,7 @@ class HomeSearchDataSource @Inject constructor(private val apiService: APIServic
 				content.actStartTime,
 				content.actEndTime,
 				content.recruitTotalNum,
-				changeCategory(content.category)
+				content.category
 			)
 		}
 	}
@@ -57,11 +57,4 @@ class HomeSearchDataSource @Inject constructor(private val apiService: APIServic
 
 	}
 
-	private fun changeCategory(originalCategory: String): String{
-		if (SpinnerList.categoryMap.containsKey(originalCategory)){
-			return SpinnerList.categoryMap[originalCategory]!!
-		} else{
-			return "봉사 활동 분류 오류"
-		}
-	}
 }

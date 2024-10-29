@@ -3,7 +3,6 @@ package com.example.potatoservice.model
 import com.example.potatoservice.model.remote.AccessTokenRequest
 import com.example.potatoservice.model.remote.ActivityDetail
 import com.example.potatoservice.model.remote.ActivityResponse
-import com.example.potatoservice.model.remote.Category
 import com.example.potatoservice.model.remote.JwtResponse
 import com.example.potatoservice.model.remote.MarkerData
 import com.example.potatoservice.model.remote.SidoGungu
@@ -74,6 +73,6 @@ interface APIService {
     @GET("/api/v1/districts/gungu")
     fun getGungu(): Call<List<SidoGungu>>
     //카테고리 목록 받음, 임시
-    @GET("/api/v1/districts/category")
-    fun getCategory(): Call<List<Category>>
+    @GET("/api/v1/activities/categories")
+    fun getCategory(): Call<List<String>>
 }

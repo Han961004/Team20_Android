@@ -3,7 +3,6 @@ package com.example.potatoservice.ui.share
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.potatoservice.model.APIService
-import com.example.potatoservice.model.remote.Category
 import com.example.potatoservice.model.remote.SidoGungu
 import retrofit2.Call
 import retrofit2.Callback
@@ -89,24 +88,19 @@ class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 		)
 	}
 	//카테고리 리스트 받기
-	private val _categoryList = MutableLiveData<List<Category>>()
+	private val _categoryList = MutableLiveData<List<String>>()
 	val categoryList get() = _categoryList
 	private val _categoryLoading = MutableLiveData(true)
 	val categoryLoading get() = _categoryLoading
 	fun getCategoryList() {
 		apiService.getCategory().enqueue(
-			object : Callback<List<Category>>{
+			object : Callback<List<String>>{
 				override fun onResponse(
-					call: Call<List<Category>>,
-					response: Response<List<Category>>
+					call: Call<List<String>>,
+					response: Response<List<String>>
 				) {
 					if (response.isSuccessful){
-						_categoryList.value = response.body()?.map { category ->
-							Category(
-								category.categoryCode,
-								category.categoryName
-							)
-						}
+						_categoryList.value = response.body()
 						_categoryLoading.value = false
 					}else{
 						Log.e("testt", "category onResponse fail: ${response.code()}")
@@ -115,7 +109,7 @@ class SpinnerDataSource @Inject constructor(private val apiService: APIService){
 					}
 				}
 
-				override fun onFailure(call: Call<List<Category>>, t: Throwable) {
+				override fun onFailure(call: Call<List<String>>, t: Throwable) {
 					Log.e("testt", "category onFailure: ${t.message}")
 					_categoryList.value = emptyList()
 					_categoryLoading.value = false
