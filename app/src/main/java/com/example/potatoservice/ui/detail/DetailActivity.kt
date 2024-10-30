@@ -112,9 +112,9 @@ class DetailActivity : AppCompatActivity() {
 	}
 	//리뷰 표시
 	private fun setProgress(){
-		binding.progressBar1.progress = viewModel.review1.toInt()
-		binding.progressBar2.progress = viewModel.review2.toInt()
-		binding.progressBar3.progress = viewModel.review3.toInt()
+//		binding.progressBar1.progress = viewModel.review1.toInt()
+//		binding.progressBar2.progress = viewModel.review2.toInt()
+//		binding.progressBar3.progress = viewModel.review3.toInt()
 	}
 	//지도 기능들
 	override fun onResume() {
