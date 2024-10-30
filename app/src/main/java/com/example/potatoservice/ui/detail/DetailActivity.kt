@@ -60,7 +60,7 @@ class DetailActivity : AppCompatActivity() {
 
 		binding.viewmodel = viewModel
 		getActivity(id)
-		setProgress()
+		setRatingBar()
 		//전화걸기 버튼
 		binding.callButton.setOnClickListener {
 			viewModel.loading.observe(this, Observer {
@@ -123,10 +123,10 @@ class DetailActivity : AppCompatActivity() {
 
 	}
 	//리뷰 표시
-	private fun setProgress(){
-		binding.progressBar1.progress = viewModel.review1.toInt()
-		binding.progressBar2.progress = viewModel.review2.toInt()
-		binding.progressBar3.progress = viewModel.review3.toInt()
+	private fun setRatingBar(){
+		binding.ratingBar1.setRating(viewModel.review1.toFloat())
+		binding.ratingBar2.setRating(viewModel.review2.toFloat())
+		binding.ratingBar3.setRating(viewModel.review3.toFloat())
 	}
 	//지도 기능들
 	override fun onResume() {
