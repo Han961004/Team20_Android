@@ -1,7 +1,6 @@
 package com.example.potatoservice.ui.share
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.potatoservice.model.remote.SidoGungu
 import javax.inject.Inject
 
@@ -11,5 +10,17 @@ class SpinnerRepository @Inject constructor(private val spinnerDataSource: Spinn
 	val sidoLoading : LiveData<Boolean> = spinnerDataSource.sidoLoading
 	fun searchSidoList(){
 		spinnerDataSource.getSidoList()
+	}
+	//군구 데이터 받기
+	val gunguList : LiveData<List<SidoGungu>> = spinnerDataSource.gunguList
+	val gunguLoading : LiveData<Boolean> = spinnerDataSource.gunguLoading
+	fun searchGunguList(){
+		spinnerDataSource.getGunguList()
+	}
+	//카테고리 데이터 받기
+	val categoryList : LiveData<List<String>> = spinnerDataSource.categoryList
+	val categoryLoading : LiveData<Boolean> = spinnerDataSource.categoryLoading
+	fun searchCategoryList(){
+		spinnerDataSource.getCategoryList()
 	}
 }
