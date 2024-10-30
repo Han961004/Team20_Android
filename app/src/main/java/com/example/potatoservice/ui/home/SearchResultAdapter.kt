@@ -41,6 +41,7 @@ class SearchResultAdapter(
 		val activity: Activity = getItem(position)
 		binding.activity = activity
 		holder.itemView.setOnClickListener {
+			Log.d("testt", "adapter click ${activity.actId}")
 			callback.onClicked(activity.actId)
 		}
 	}
