@@ -1,5 +1,7 @@
 package com.example.potatoservice.model.remote
 
+import java.io.Serializable
+
 /* 로그인 요청
 * 유저 정보를 반환
  */
@@ -14,8 +16,8 @@ data class UserInfo(
     val nickname: String,
     val ageGroup: String,
     val experience: String,
-    val level: Int
-)
+    val level: String
+) : Serializable
 
 /* 회원 가입 요청
 * 회원 가입 요청 <객체>

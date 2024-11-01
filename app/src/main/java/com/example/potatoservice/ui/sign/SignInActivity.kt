@@ -51,9 +51,9 @@ class SignInActivity : AppCompatActivity() {
     }
 
     /* 스프링 서버에 jwt 및 avatar 정보 요청
-    * 헤더에서 받아들인 jwt를 sharedpreference 에 저장시킴
     * userInfo 가 null 값이면 회원 가입 activity / userInfo 가 있으면 메인 Activity 이동
-    * mainActivity로 넘길 때 받아들인 avatar 객체 정보를 putExtra로 같이 넘겨줌
+    * 이동할 때 받아들인 avatar 객체 정보를 SharedPreferences에 넣습니다.
+    * 필요할 때마다 jwtToken을 사용하시면 됩니다. -> 필요할 때란, retrofit으로 스프링 서버와 데이터를 주고 받을 때, 헤더에 jwtToken 변수를 넣어줘야 합니다.
      */
     private fun sendAccessTokenToServer(accessToken: String) {
         RetrofitClient.apiService().kakaoLogin(accessToken).enqueue(object : Callback<LoginRequest> {
@@ -66,21 +66,20 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("testt", jwtToken.toString())
 
                     if (jwtToken != null) {
-                        Log.d("testt", "Received JWT token: $jwtToken")
+
                         val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         with(sharedPref.edit()) {
                             putString("jwt_token", jwtToken)
+                            putString("user_info", userInfo?.toString()) // 필요한 경우 JSON 형태로 직렬화 가능
                             apply()
                         }
-                        if (userInfo != null) {
-                            val intent = Intent(this@SignInActivity, MainActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        } else {
-                            val intent = Intent(this@SignInActivity, SignUpActivity::class.java)
-                            startActivity(intent)
-                            finish()
-                        }
+
+                        // 필요한 화면으로 이동
+                        val intent = Intent(this@SignInActivity, if (userInfo != null) MainActivity::class.java else SignUpActivity::class.java)
+                        startActivity(intent)
+                        finish()
+
+
                     } else {
                         Log.e("testt", "JWT token not found in headers")
                     }
