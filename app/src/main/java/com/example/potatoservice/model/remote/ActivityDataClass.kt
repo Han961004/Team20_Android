@@ -88,8 +88,8 @@ data class ActivityDetail(
                 0,
                 "기관 정보 없음",
                 "기관 주소 정보 없음",
-                0.0,
-                0.0,
+                37.870448,
+                127.746190,
                 "기관 전화 번호 정보 없음"
             )
         )
@@ -103,4 +103,12 @@ data class Institute(
     val latitude:Double?,
     val longitude:Double?,
     val phone:String
+)
+//시도군구 데이터 클래스
+data class SidoGungu(
+    val sidoGunguCode:Int,
+    val sidoCode: Int,
+    val sidoName: String,
+    val gunguName: String?,
+    val sido: Boolean
 )

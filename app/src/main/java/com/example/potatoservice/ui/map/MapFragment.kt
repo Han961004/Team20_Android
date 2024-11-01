@@ -82,7 +82,12 @@ class MapFragment : Fragment() {
                     )
                 }
 
-                mapViewModel.setMarkerData()
+                // 지도 클릭 리스너 추가
+                kakaoMap.setOnMapClickListener { _, _, _, _ ->
+                    hideCardView()
+                }
+
+//                mapViewModel.setMarkerData()
                 mapViewModel.markerDataList.observe(viewLifecycleOwner) { markerDataList ->
                     markerDataList?.let {
                         mapViewModel.addMarkersToMap(kakaoMap)
@@ -121,13 +126,12 @@ class MapFragment : Fragment() {
         }
     }
 
-
-
-
-
     // 카드뷰에 정보를 업데이트하는 함수
     private fun updateCardView(markerData: MarkerData) {
         binding.titleText.text = markerData.title
+        binding.serviceOrganizationServiceCategory.text = "${markerData.organization}"
+        binding.serviceRecruitment.text = "${markerData.recruitmentPeriod} | 모집 인원: ${markerData.recruitmentCount}"
+        binding.serviceTime.text = "${markerData.activityPeriod} | 활동 시간: ${markerData.activityTime}"
         binding.descriptionText.text = "${markerData.address} \n${markerData.description}"
     }
 

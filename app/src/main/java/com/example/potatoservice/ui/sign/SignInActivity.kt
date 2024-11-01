@@ -1,5 +1,6 @@
 package com.example.potatoservice.ui.sign
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,8 +11,11 @@ import com.kakao.sdk.common.KakaoSdk
 import com.example.potatoservice.MainActivity
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivitySignInBinding
-import com.kakao.sdk.common.model.ClientError
-import com.kakao.sdk.common.model.ClientErrorCause
+import com.example.potatoservice.model.RetrofitClient
+import com.example.potatoservice.model.remote.LoginRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
@@ -20,50 +24,72 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        KakaoSdk.init(this, getString(R.string.kakao_api_key))
         tryLoginKakao()
     }
 
+    /* 카카오 서버 인가 코드 요청
+    * 로그인 버튼 클릭시, 카카오 앱을 통해 로그인하고 인가 코드를 받아들임
+    * 받아들인 인가 코드를 스프링 서버로 보냄으로써 jwt와 avatar(userInfo) 받아옴
+     */
     private fun tryLoginKakao() {
-        KakaoSdk.init(this, getString(R.string.kakao_api_key))
-
-        // 카카오계정으로 로그인 공통 callback 구성
-        // 카카오톡으로 로그인 할 수 없어 카카오계정으로 로그인할 경우 사용됨
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
-                Log.e("testt", "카카오계정으로 로그인 실패", error)
+                Log.e("testt", "Login failed: ${error.message}")
             } else if (token != null) {
-                Log.i("testt", "카카오계정으로 로그인 성공 ${token.accessToken}")
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                Log.d("testt", "Login successful, token: ${token.accessToken}")
+                sendAccessTokenToServer(token.accessToken)
             }
         }
+        UserApiClient.instance.run {
+            if (isKakaoTalkLoginAvailable(this@SignInActivity)) {
+                loginWithKakaoTalk(this@SignInActivity, callback = callback)
+            } else {
+                loginWithKakaoAccount(this@SignInActivity, callback = callback)
+            }
+        }
+    }
 
-        // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
-        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-            UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
-                if (error != null) {
-                    Log.e("testt", "카카오톡으로 로그인 실패", error)
+    /* 스프링 서버에 jwt 및 avatar 정보 요청
+    * userInfo 가 null 값이면 회원 가입 activity / userInfo 가 있으면 메인 Activity 이동
+    * 이동할 때 받아들인 avatar 객체 정보를 SharedPreferences에 넣습니다.
+    * 필요할 때마다 jwtToken을 사용하시면 됩니다. -> 필요할 때란, retrofit으로 스프링 서버와 데이터를 주고 받을 때, 헤더에 jwtToken 변수를 넣어줘야 합니다.
+     */
+    private fun sendAccessTokenToServer(accessToken: String) {
+        RetrofitClient.apiService().kakaoLogin(accessToken).enqueue(object : Callback<LoginRequest> {
+            override fun onResponse(call: Call<LoginRequest>, response: Response<LoginRequest>) {
 
-                    // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-                    // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
-                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                        return@loginWithKakaoTalk
+                if (response.isSuccessful) {
+                    val jwtToken = response.headers()["Authorization"]
+                    val userInfo = response.body()?.userInfo
+                    Log.d("testt", userInfo.toString())
+                    Log.d("testt", jwtToken.toString())
+
+                    if (jwtToken != null) {
+
+                        val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                        with(sharedPref.edit()) {
+                            putString("jwt_token", jwtToken)
+                            putString("user_info", userInfo?.toString()) // 필요한 경우 JSON 형태로 직렬화 가능
+                            apply()
+                        }
+
+                        // 필요한 화면으로 이동
+                        val intent = Intent(this@SignInActivity, if (userInfo != null) MainActivity::class.java else SignUpActivity::class.java)
+                        startActivity(intent)
+                        finish()
+
+
+                    } else {
+                        Log.e("testt", "JWT token not found in headers")
                     }
-
-                    // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                    UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-                } else if (token != null) {
-                    Log.i("testt", "카카오톡으로 로그인 성공 ${token.accessToken}")
-
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                } else {
+                    Log.e("testt", "Backend login failed: ${response.code()}")
                 }
             }
-        } else {
-            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-        }
+            override fun onFailure(call: Call<LoginRequest>, t: Throwable) {
+                Log.e("testt", "Backend login error: ${t.message}")
+            }
+        })
     }
 }
