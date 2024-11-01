@@ -2,7 +2,6 @@ package com.example.potatoservice.ui.sign
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -13,8 +12,7 @@ import com.example.potatoservice.MainActivity
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivitySignInBinding
 import com.example.potatoservice.model.RetrofitClient
-import com.example.potatoservice.model.remote.AccessTokenRequest
-import com.example.potatoservice.model.remote.JwtResponse
+import com.example.potatoservice.model.remote.LoginRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,20 +28,19 @@ class SignInActivity : AppCompatActivity() {
         tryLoginKakao()
     }
 
-    // 카카오 로그인 처리 함수
+    /* 카카오 서버 인가 코드 요청
+    * 로그인 버튼 클릭시, 카카오 앱을 통해 로그인하고 인가 코드를 받아들임
+    * 받아들인 인가 코드를 스프링 서버로 보냄으로써 jwt와 avatar(userInfo) 받아옴
+     */
     private fun tryLoginKakao() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
                 Log.e("testt", "Login failed: ${error.message}")
             } else if (token != null) {
                 Log.d("testt", "Login successful, token: ${token.accessToken}")
-
-                // 토큰을 서버에 보내서 JWT 받기
-                sendKakaoAccessTokenToServer(token.accessToken)
-
+                sendAccessTokenToServer(token.accessToken)
             }
         }
-
         UserApiClient.instance.run {
             if (isKakaoTalkLoginAvailable(this@SignInActivity)) {
                 loginWithKakaoTalk(this@SignInActivity, callback = callback)
@@ -53,39 +50,46 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    // 서버에 액세스 토큰을 보내고 JWT를 받아오는 함수
-    private fun sendKakaoAccessTokenToServer(kakaoAccessToken: String) {
-        val request = AccessTokenRequest(accessToken = kakaoAccessToken)
+    /* 스프링 서버에 jwt 및 avatar 정보 요청
+    * userInfo 가 null 값이면 회원 가입 activity / userInfo 가 있으면 메인 Activity 이동
+    * 이동할 때 받아들인 avatar 객체 정보를 SharedPreferences에 넣습니다.
+    * 필요할 때마다 jwtToken을 사용하시면 됩니다. -> 필요할 때란, retrofit으로 스프링 서버와 데이터를 주고 받을 때, 헤더에 jwtToken 변수를 넣어줘야 합니다.
+     */
+    private fun sendAccessTokenToServer(accessToken: String) {
+        RetrofitClient.apiService().kakaoLogin(accessToken).enqueue(object : Callback<LoginRequest> {
+            override fun onResponse(call: Call<LoginRequest>, response: Response<LoginRequest>) {
 
-        RetrofitClient.apiService.sendKakaoAccessToken(request).enqueue(object : Callback<JwtResponse> {
-            override fun onResponse(call: Call<JwtResponse>, response: Response<JwtResponse>) {
                 if (response.isSuccessful) {
-                    // JWT 수신 성공
-                    val jwtToken = response.body()?.jwtToken
-                    Log.d("testt", "JWT Token received: $jwtToken")
+                    val jwtToken = response.headers()["Authorization"]
+                    val userInfo = response.body()?.userInfo
+                    Log.d("testt", userInfo.toString())
+                    Log.d("testt", jwtToken.toString())
 
-                    // SharedPreferences에 JWT 토큰 저장
-                    val sharedPreferences: SharedPreferences = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putString("jwt_token", jwtToken)
-                    editor.apply()
+                    if (jwtToken != null) {
 
-                    // MainActivity로 이동
-                    startActivity(Intent(this@SignInActivity, MainActivity::class.java))
-                    finish()
+                        val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+                        with(sharedPref.edit()) {
+                            putString("jwt_token", jwtToken)
+                            putString("user_info", userInfo?.toString()) // 필요한 경우 JSON 형태로 직렬화 가능
+                            apply()
+                        }
 
+                        // 필요한 화면으로 이동
+                        val intent = Intent(this@SignInActivity, if (userInfo != null) MainActivity::class.java else SignUpActivity::class.java)
+                        startActivity(intent)
+                        finish()
+
+
+                    } else {
+                        Log.e("testt", "JWT token not found in headers")
+                    }
                 } else {
-                    // 서버 응답이 실패한 경우
-                    Log.e("testt", "Failed to get JWT, response code: ${response.code()}")
+                    Log.e("testt", "Backend login failed: ${response.code()}")
                 }
             }
-
-            override fun onFailure(call: Call<JwtResponse>, t: Throwable) {
-                // 네트워크 오류 등의 실패
-                Log.e("testt", "Error in API call: ${t.message}")
+            override fun onFailure(call: Call<LoginRequest>, t: Throwable) {
+                Log.e("testt", "Backend login error: ${t.message}")
             }
         })
     }
-
-
 }

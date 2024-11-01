@@ -40,6 +40,14 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /* 김동한
+        * 확인차 일단 MyPageFragment에 들어갈 때마다 잘 나오는지 Log를 찍어봤습니다. 나중에 지우셔도 됩니다.
+        * 단, 걱정되는게, 제 예상으로는 이게 로그인 한 다음 부터는 MyPage에서 경험치가 올라가도 실시간 반영이 안 될 수도 있습니다. 10시간이 채워져도 1레벨 -> 1레벨 그대로 일 수 있다는 것 입니다.
+        * 해결 방안은 아마 retrofit으로 경험치를 실시간 주고 받아야 하거나, 참조를 sharedpreferences 가 아니라 따로 ViewModel에 저장시켜 놓으시는 게 좋을 것 같습니다.
+         */
+//        myPageViewModel.jwtToken.observe(viewLifecycleOwner) { jwtToken -> Log.d("testt", "MyPage JWT Token: $jwtToken") }
+//        myPageViewModel.userInfo.observe(viewLifecycleOwner) { userInfo -> Log.d("testt", "MyPage User Info: $userInfo") }
+
 
         myPageViewModel.setVolunteerHours()
         myPageViewModel.setVolunteerCount()
