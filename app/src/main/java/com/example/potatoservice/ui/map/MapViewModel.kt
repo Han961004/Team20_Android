@@ -47,7 +47,7 @@ class MapViewModel : ViewModel() {
 
 
 
-    private val _markerDataList = MutableLiveData<List<MarkerData>>()
+    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf(MarkerData(37.870448, 127.746190, "test", "address", "설명", "기관", "모집기간", "모집인원", "활동 시간","활동 기간")))
     val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
     private val _selectedMarker = MutableLiveData<MarkerData?>()
     val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
@@ -55,7 +55,7 @@ class MapViewModel : ViewModel() {
     // 서버에서 마커 데이터를 가져와 LiveData에 저장
     fun setMarkerData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = RetrofitClient.apiService.getMarkers()
+            val response = RetrofitClient.apiService().getMarkers()
 
             response.enqueue(object : Callback<List<MarkerData>> {
                 override fun onResponse(
@@ -89,24 +89,16 @@ class MapViewModel : ViewModel() {
         _selectedMarker.value = null
     }
 
-
     // 지도에 라벨 추가
     fun addMarkersToMap(kakaoMap: KakaoMap) {
         val markerDataList = _markerDataList.value ?: return
 
         for (markerData in markerDataList) {
-            // lat과 lng 값을 사용하여 LatLng 객체 생성
             val latLng = LatLng.from(markerData.lat, markerData.lng)
-
-            // 마커 스타일 설정 (원하는 스타일로 변경 가능)
             val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker).setZoomLevel(5))
             val labelOptions = LabelOptions.from(latLng).setStyles(styles)
-
-            // 라벨 추가
             val label = kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
             Log.d("testt", "Marker added at: ${latLng.latitude}, ${latLng.longitude}")
-
-            // 라벨에 MarkerData 연결
             label.tag = markerData
         }
 

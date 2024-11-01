@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_plain"
     android:fillViewport="true">
 
     <LinearLayout
@@ -24,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="닉네임"
-            android:textColor="#8000FF"
+            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <EditText
@@ -32,14 +33,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:hint="닉네임 입력"
+            android:textColorHint="@color/light_blue_grey"
+            android:textColor="@color/black"
+            android:hint="닉네임 입력해주세요"
             android:padding="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="나이 구분"
-            android:textColor="#8000FF"
+            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -64,7 +67,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="중학생"
-                    android:textColor="#8000FF"
+                    android:textColor="@color/black"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -83,7 +86,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="고등학생"
-                    android:textColor="#8000FF"
+                    android:textColor="@color/black"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -102,7 +105,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="대학생"
-                    android:textColor="#8000FF"
+                    android:textColor="@color/black"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -121,7 +124,7 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="성인"
-                    android:textColor="#8000FF"
+                    android:textColor="@color/black"
                     android:textSize="14dp" />
             </LinearLayout>
 
@@ -132,7 +135,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="봉사 활동 경험"
-            android:textColor="#8000FF"
+            android:textColor="@color/black"
             android:textSize="14sp" />
 
         <LinearLayout

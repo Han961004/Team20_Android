@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -31,7 +32,8 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import dagger.hilt.android.AndroidEntryPoint
-
+//신청 url
+const val requestUrl = "https://www.1365.go.kr/vols/1572247904127/partcptn/timeCptn.do?type=show&progrmRegistNo="
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
 	//봉사 활동 id
@@ -58,13 +60,25 @@ class DetailActivity : AppCompatActivity() {
 
 		binding.viewmodel = viewModel
 		getActivity(id)
-		setProgress()
+		setRatingBar()
+
 		//전화걸기 버튼
 		binding.callButton.setOnClickListener {
 			viewModel.loading.observe(this, Observer {
 				val phoneNumber = detail?.actPhone
 				startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
 			})
+		}
+
+		//신청하기 버튼
+		binding.requestButton.setOnClickListener {
+			val url = requestUrl + id
+			val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+			if (intent.resolveActivity(packageManager) != null) {
+				startActivity(intent)
+			} else {
+				Toast.makeText(this, "웹 브라우저 앱을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+			}
 		}
 
 		//지도 기능들
@@ -111,10 +125,10 @@ class DetailActivity : AppCompatActivity() {
 
 	}
 	//리뷰 표시
-	private fun setProgress(){
-		binding.progressBar1.progress = viewModel.review1.toInt()
-		binding.progressBar2.progress = viewModel.review2.toInt()
-		binding.progressBar3.progress = viewModel.review3.toInt()
+	private fun setRatingBar(){
+		binding.ratingBar1.setRating(viewModel.review1.toFloat())
+		binding.ratingBar2.setRating(viewModel.review2.toFloat())
+		binding.ratingBar3.setRating(viewModel.review3.toFloat())
 	}
 	//지도 기능들
 	override fun onResume() {
@@ -163,7 +177,15 @@ class DetailActivity : AppCompatActivity() {
 				})
 			}
 		})
+		//스크롤뷰가 지도 터치 간섭 안 하게
+		mapView.surfaceView?.setOnTouchListener(View.OnTouchListener(){
+			view, motionEvent ->
+			binding.scrollView.requestDisallowInterceptTouchEvent(true)
+			false
+		})
 	}
+
+
 	//봉사 활동 장소 마커로 표시
 	private fun setMarker(latLng:LatLng) {
 		val styles = LabelStyles.from(LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5))
