@@ -1,16 +1,15 @@
 package com.example.potatoservice.model.remote
 
-// 기존 회원 여부 response
-data class SignUpResponse(
-    val userInfo: UserInfo
-)
-
-// 로그인 response
+/* 로그인 요청
+* 유저 정보를 반환
+ */
 data class LoginRequest(
     val userInfo: UserInfo
 )
 
-// 유저 정보
+/* 유저 정보
+* 유저 정보의 <객체> 닉네임, 나이대, 경험, 레벨 등
+ */
 data class UserInfo(
     val nickname: String,
     val ageGroup: String,
@@ -18,26 +17,11 @@ data class UserInfo(
     val level: Int
 )
 
-// 회원 가입 시 보낼 유저 객체
+/* 회원 가입 요청
+* 회원 가입 요청 <객체>
+ */
 data class SendSignUpUserInfo(
     val nickName: String,
     val ageGroup: String,
     val experience: String
 )
-
-// 회원 가입 후 메시지 return
-data class SignUpRequest(
-    val messaage: String
-)
-
-
-
-
-
-
-
-data class AccessToken(
-    val accessToken: String
-)
-
-
