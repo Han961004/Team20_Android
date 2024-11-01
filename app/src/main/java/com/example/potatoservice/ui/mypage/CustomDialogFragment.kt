@@ -99,7 +99,7 @@ class CustomDialogFragment() : DialogFragment() {
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
 
-        // 다이얼로그의 크기를 화면 비율로 설정 (예: 너비 80%, 높이 50%)
+        // 다이얼로그의 크기를 화면 비율로 설정
         val dialogWidth = (screenWidth * 0.8).toInt()  // 너비 80%
         val dialogHeight = (screenHeight * 0.5).toInt() // 높이 50%
 

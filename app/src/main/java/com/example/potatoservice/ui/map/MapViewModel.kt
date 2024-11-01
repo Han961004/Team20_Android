@@ -47,7 +47,7 @@ class MapViewModel : ViewModel() {
 
 
 
-    private val _markerDataList = MutableLiveData<List<MarkerData>>()
+    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf(MarkerData(37.870448, 127.746190, "test", "address", "설명", "기관", "모집기간", "모집인원", "활동 시간","활동 기간")))
     val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
     private val _selectedMarker = MutableLiveData<MarkerData?>()
     val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker

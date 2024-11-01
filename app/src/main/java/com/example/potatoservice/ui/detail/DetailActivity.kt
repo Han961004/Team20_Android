@@ -61,6 +61,7 @@ class DetailActivity : AppCompatActivity() {
 		binding.viewmodel = viewModel
 		getActivity(id)
 		setRatingBar()
+
 		//전화걸기 버튼
 		binding.callButton.setOnClickListener {
 			viewModel.loading.observe(this, Observer {
@@ -68,6 +69,7 @@ class DetailActivity : AppCompatActivity() {
 				startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber")))
 			})
 		}
+
 		//신청하기 버튼
 		binding.requestButton.setOnClickListener {
 			val url = requestUrl + id
