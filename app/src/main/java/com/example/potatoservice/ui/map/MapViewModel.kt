@@ -55,7 +55,7 @@ class MapViewModel : ViewModel() {
     // 서버에서 마커 데이터를 가져와 LiveData에 저장
     fun setMarkerData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = RetrofitClient.apiService.getMarkers()
+            val response = RetrofitClient.apiService().getMarkers()
 
             response.enqueue(object : Callback<List<MarkerData>> {
                 override fun onResponse(

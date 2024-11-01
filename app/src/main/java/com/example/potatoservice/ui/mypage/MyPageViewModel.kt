@@ -86,4 +86,21 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
         myPageModel.setRecyclerViewCount()
     }
 
+
+    /* 김동한
+    * SignIn 로그인 Activity 에서 로그인을 하면, SharedPreferences에 jwtToken과 userInfo 객체를 담습니다.
+    * 이제 SharedPreferences에서 꺼내서 userInfo(아바타) 에는 현재 <닉네임, 나이대, 경험(횟수), 레벨(경험치?)> 이 담겨져 있습니다.
+     */
+    private val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    private val _jwtToken = MutableLiveData<String>()
+    val jwtToken: LiveData<String> get() = _jwtToken
+
+    private val _userInfo = MutableLiveData<String?>() // userInfo를 JSON 문자열로 가정
+    val userInfo: LiveData<String?> get() = _userInfo
+
+    init {
+        _jwtToken.value = sharedPref.getString("jwt_token", null)
+        _userInfo.value = sharedPref.getString("user_info", null)
+    }
+
 }
