@@ -59,6 +59,7 @@
             <TextView
                 android:id="@+id/service_description"
                 android:layout_width="match_parent"
+
                 android:layout_height="wrap_content"
                 android:text="@{@string/봉사설명(detail.description)}"
                 android:textColor="#424242"
@@ -77,6 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{@string/카테고리(detail.category)}"
+
                 android:textColor="#424242"
                 android:layout_marginTop="8dp"/>
 
