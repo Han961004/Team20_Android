@@ -60,26 +60,20 @@ class SignInActivity : AppCompatActivity() {
             override fun onResponse(call: Call<LoginRequest>, response: Response<LoginRequest>) {
 
                 if (response.isSuccessful) {
-                    val jwtToken = response.headers()["Authorization"]
-                    val userInfo = response.body()?.userInfo
-                    Log.d("testt", userInfo.toString())
-                    Log.d("testt", jwtToken.toString())
-
+                    val jwtToken = response.headers()["token"]
+                    val avatarInfo = response.body()?.avatar
+                    Log.d("testt", "JWT Token: $jwtToken")
+                    Log.d("testt", "Avatar Info: $avatarInfo")
                     if (jwtToken != null) {
-
                         val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         with(sharedPref.edit()) {
                             putString("jwt_token", jwtToken)
-                            putString("user_info", userInfo?.toString()) // 필요한 경우 JSON 형태로 직렬화 가능
+                            putString("user_info", avatarInfo?.toString()) // 필요한 경우 JSON 형태로 직렬화 가능
                             apply()
                         }
-
-                        // 필요한 화면으로 이동
-                        val intent = Intent(this@SignInActivity, if (userInfo != null) MainActivity::class.java else SignUpActivity::class.java)
+                        val intent = Intent(this@SignInActivity, if (avatarInfo != null) MainActivity::class.java else SignUpActivity::class.java)
                         startActivity(intent)
                         finish()
-
-
                     } else {
                         Log.e("testt", "JWT token not found in headers")
                     }
