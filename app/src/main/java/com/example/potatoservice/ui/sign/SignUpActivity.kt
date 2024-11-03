@@ -28,10 +28,12 @@ class SignUpActivity : AppCompatActivity() {
         binding.completeButton.setOnClickListener { sendSignUpUserInfo() }
     }
 
-    // 나이대와 경험 레벨 버튼 선택 설정
+    /* 회원 가입 기입 사항
+    * 나이 범위 -> 청소년, 대학생, 성인
+    * 봉사 경험 -> 초급자, 중급자, 상급자
+     */
     private fun setupSelectionListeners() {
         val ageButtons = mapOf(
-            binding.middleSchoolButton to "중학생",
             binding.highSchoolButton to "청소년",
             binding.universityButton to "대학생",
             binding.adultButton to "성인"
@@ -60,7 +62,11 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    // 회원 가입 정보를 서버로 전송하는 함수
+    /* 회원 가입 정보 전송
+    * 빈 칸이 있으면 안 됨
+    * 전송 시 헤더에 SharedPreferences 에서 jwt 꺼내와서 같이 보냄
+    * 보낼 때 스프링 서버와의 json 객체 바디의 이름이 같아야 함
+     */
     private fun sendSignUpUserInfo() {
         val nickName = binding.nicknameEditText.text.toString()
         val ageGroup = selectedAgeGroup
@@ -70,11 +76,6 @@ class SignUpActivity : AppCompatActivity() {
             val userInfo = SendSignUpUserInfo(nickName, ageGroup, experience)
             val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
             val jwtToken = sharedPreferences.getString("jwt_token", null)
-
-            if (jwtToken == null) {
-                Toast.makeText(this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show()
-                return
-            }
 
             Log.d("testt", "JWT Token: Bearer $jwtToken")
             Log.d("testt", "UserInfo: nickname=$nickName, ageRange=$ageGroup, experienced=$experience")

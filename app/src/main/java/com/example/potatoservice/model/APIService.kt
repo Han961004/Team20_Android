@@ -35,7 +35,7 @@ interface APIService {
         @Body signUpInfo: SendSignUpUserInfo
     ): Call<Void>
 
-    /*
+    /* 활동 조회
     *
      */
     @GET("/api/v1/activities")
@@ -48,22 +48,24 @@ interface APIService {
         @Query("category") category: String? = null
     ): Call<ActivityResponse>
 
+    /* 개별 활동 조회
+    *
+     */
+    @GET("/api/v1/activities/{activity_id}")
+    fun getActivityDetail(
+        @Path("activity_id") activityId: Int
+    ): Call<ActivityDetail>
 
 
 
 
 
-
-
-    // 지도 맵 마커
+    // 지도 맵 마커 -> 삭제
     @GET("/api/markers")
     fun getMarkers(
     ): Call<List<MarkerData>>
 
 
 
-    @GET("/api/v1/activities/{activity_id}")
-    fun getActivityDetail(
-        @Path("activity_id") activityId: Int
-    ): Call<ActivityDetail>
+
 }
