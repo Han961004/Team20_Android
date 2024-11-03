@@ -4,21 +4,27 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.common.KakaoSdk
 import com.example.potatoservice.MainActivity
+import com.example.potatoservice.MainViewModel
 import com.example.potatoservice.R
 import com.example.potatoservice.databinding.ActivitySignInBinding
 import com.example.potatoservice.model.RetrofitClient
 import com.example.potatoservice.model.remote.LoginRequest
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+@AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
+    private val mainViewModel: MainViewModel by viewModels() // ViewModel 주입
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +71,13 @@ class SignInActivity : AppCompatActivity() {
                     Log.d("testt", "JWT Token: $jwtToken")
                     Log.d("testt", "Avatar Info: $avatarInfo")
                     if (jwtToken != null) {
+
+                        /*
+                        * SharedPreferences -> MainVM 저장 방법 변경
+                        * 일단 shared 방식도 냅두겠습니다. Main에서 꺼내 써주세요.
+                         */
+                        mainViewModel.setLoginData(jwtToken, avatarInfo?.toString())
+
                         val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         with(sharedPref.edit()) {
                             putString("jwt_token", jwtToken)
