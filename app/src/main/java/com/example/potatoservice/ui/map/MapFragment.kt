@@ -87,7 +87,7 @@ class MapFragment : Fragment() {
                     hideCardView()
                 }
 
-                mapViewModel.setMarkerData()
+//                mapViewModel.setMarkerData()
                 mapViewModel.markerDataList.observe(viewLifecycleOwner) { markerDataList ->
                     markerDataList?.let {
                         mapViewModel.addMarkersToMap(kakaoMap)

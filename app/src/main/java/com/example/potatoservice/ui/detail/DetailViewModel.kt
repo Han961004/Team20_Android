@@ -22,9 +22,9 @@ class DetailViewModel @Inject constructor(
 
 ): AndroidViewModel(application){
 	//리뷰 퍼센트지 값
-	var review1 = "50"
-	var review2 = "40"
-	var review3 = "30"
+	var review1 = 4.5
+	var review2 = 3.5
+	var review3 = 2.5
 
 	val activityDetail = repository.activityDetail.asLiveData()
 
