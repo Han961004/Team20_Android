@@ -28,13 +28,13 @@ class SignUpActivity : AppCompatActivity() {
         binding.completeButton.setOnClickListener { sendSignUpUserInfo() }
     }
 
-    /* 회원 가입 시, 필요 값
-    * 버튼 바인딩 -> 닉네임 입력, 나이대 입력, 경험 입력
+    /* 회원 가입 기입 사항
+    * 나이 범위 -> 청소년, 대학생, 성인
+    * 봉사 경험 -> 초급자, 중급자, 상급자
      */
     private fun setupSelectionListeners() {
         val ageButtons = mapOf(
-            binding.middleSchoolButton to "중학생",
-            binding.highSchoolButton to "고등학생",
+            binding.highSchoolButton to "청소년",
             binding.universityButton to "대학생",
             binding.adultButton to "성인"
         )
@@ -48,9 +48,9 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         val experienceButtons = mapOf(
-            binding.firstTimeButton to "처음이에요",
-            binding.someExperienceButton to "몇번해봤어요",
-            binding.lotsExperienceButton to "자주하고있어요"
+            binding.firstTimeButton to "초급자",
+            binding.someExperienceButton to "중급자",
+            binding.lotsExperienceButton to "상급자"
         )
 
         experienceButtons.forEach { (button, interest) ->
@@ -62,18 +62,10 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    /* 회원 가입 버튼 누름
-    * sharedpreference 에서 jwt 꺼내기
-    * 위에서 바인딩한 누른 값을 <객체>로 만들어서 jwt와 함께 서버에 전송
-    *
-    * 회원 가입한 후 1) Main 으로 값을 넘기기 2) Splash 로 넘기기 3) SignIn 로 넘기기
-    *
-    * 회원 가입 시 나타날 수 있는 오류
-    * response HTTP 코드로 판별할 것
-    * HTTP 201 Created
-    * HTTP 400 Bad Request : 존재하지 않는 유저
-    * HTTP 401 Unauthorized : 유저 토큰 인증 오류
-    * HTTP 409 Conflict : 이미 존재하는 닉네임 (중복)
+    /* 회원 가입 정보 전송
+    * 빈 칸이 있으면 안 됨
+    * 전송 시 헤더에 SharedPreferences 에서 jwt 꺼내와서 같이 보냄
+    * 보낼 때 스프링 서버와의 json 객체 바디의 이름이 같아야 함
      */
     private fun sendSignUpUserInfo() {
         val nickName = binding.nicknameEditText.text.toString()
@@ -85,13 +77,15 @@ class SignUpActivity : AppCompatActivity() {
             val sharedPreferences = getSharedPreferences("auth_prefs", MODE_PRIVATE)
             val jwtToken = sharedPreferences.getString("jwt_token", null)
 
+            Log.d("testt", "JWT Token: Bearer $jwtToken")
+            Log.d("testt", "UserInfo: nickname=$nickName, ageRange=$ageGroup, experienced=$experience")
+
             RetrofitClient.apiService().sendUserInfo("Bearer $jwtToken", userInfo).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     when (response.code()) {
                         201 -> {
                             Toast.makeText(this@SignUpActivity, "회원가입을 환영합니다, $nickName 님!", Toast.LENGTH_LONG).show()
                             val intent = Intent(this@SignUpActivity, SplashActivity::class.java)
-                            // SplashActivity 냐 SignInActivity 냐
                             startActivity(intent)
                             finish()
                         }
@@ -105,7 +99,8 @@ class SignUpActivity : AppCompatActivity() {
                             Toast.makeText(this@SignUpActivity, "이미 존재하는 닉네임입니다. 다른 닉네임을 사용해주세요.", Toast.LENGTH_SHORT).show()
                         }
                         else -> {
-                            Log.d("testt", "Failure Response: ${response.message()}")
+                            val errorBody = response.errorBody()?.string()
+                            Log.d("testt", "Failure Response: ${errorBody ?: "No error message"}")
                             Toast.makeText(this@SignUpActivity, "회원가입에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                         }
                     }
@@ -120,5 +115,4 @@ class SignUpActivity : AppCompatActivity() {
             Toast.makeText(this, "모든 필드를 입력해주세요.", Toast.LENGTH_SHORT).show()
         }
     }
-
 }
