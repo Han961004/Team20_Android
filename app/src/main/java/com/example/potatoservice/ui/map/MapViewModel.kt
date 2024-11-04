@@ -47,7 +47,7 @@ class MapViewModel : ViewModel() {
 
 
 
-    private val _markerDataList = MutableLiveData<List<MarkerData>>()
+    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf(MarkerData(37.870448, 127.746190, "test", "address", "설명", "기관", "모집기간", "모집인원", "활동 시간","활동 기간")))
     val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
     private val _selectedMarker = MutableLiveData<MarkerData?>()
     val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
@@ -55,7 +55,7 @@ class MapViewModel : ViewModel() {
     // 서버에서 마커 데이터를 가져와 LiveData에 저장
     fun setMarkerData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = RetrofitClient.apiService.getMarkers()
+            val response = RetrofitClient.apiService().getMarkers()
 
             response.enqueue(object : Callback<List<MarkerData>> {
                 override fun onResponse(

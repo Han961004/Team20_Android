@@ -18,3 +18,19 @@ data class MarkerData(
     val latLng: LatLng
         get() = LatLng.from(lat, lng)
 }
+
+data class HomeData(
+    val id: Long,
+    val title: String,
+    val location: String,
+    val recruitmentCount: String
+    // 필요한 필드를 추가
+)
+
+data class MapData(
+    val id: Long,
+    val location: String,
+    val title: String,
+    val address: String
+// 필요한 필드를 추가
+)
