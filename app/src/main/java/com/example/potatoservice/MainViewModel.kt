@@ -1,60 +1,60 @@
 package com.example.potatoservice
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.potatoservice.model.remote.HomeData
-import com.example.potatoservice.model.remote.MapData
+import androidx.lifecycle.asLiveData
+import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.ui.home.HomeRepository
 import com.example.potatoservice.ui.share.Request
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+@HiltViewModel
 class MainViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val activityList = homeRepository.activityList
-    val loading = homeRepository.loading
 
+    private val _searchResults = MutableLiveData<List<Activity>>()
+    val searchResults: LiveData<List<Activity>> get() = _searchResults
+
+    private val _jwtToken = MutableLiveData<String>()
+    val jwtToken: LiveData<String> get() = _jwtToken
+
+    private val _userInfo = MutableLiveData<String>()
+    val userInfo: LiveData<String> get() = _userInfo
+
+    /*
+    * 굳이 없어도 되는 건지 나중에 확인
+     */
     fun searchHomeData(request: Request) {
         homeRepository.search(request)
+        Log.d("testt", "검색결과: $request")
     }
 
-
-}
-
-// HomeFragment용 UseCase
-class GetHomeDataUseCase @Inject constructor(
-    private val homeRepository: HomeRepository
-) {
-    fun getHomeData(): Flow<List<HomeData>> {
-        return homeRepository.activityList.map { activities ->
-            activities.map { activity ->
-                HomeData(
-                    id = activity.actId.toLong(),
-                    title = activity.actTitle ?: "제목 없음",
-                    location = activity.actLocation ?: "장소 정보 없음",
-                    recruitmentCount = activity.recruitTotalNum.toString() // recruitTotalNum 사용
-                )
-            }
-        }
+    /* 아바타 정보 공유
+    * SignInActivity 에서 ViewModel에 넣었던 값 받아오기
+     */
+    fun setLoginData(token: String, userInfo: String?) {
+        _jwtToken.value = token
+        _userInfo.value = userInfo.toString()
+        Log.d("testt", "뷰모델 로그인 저장 : ${_userInfo.value}, ${_jwtToken.value}")
     }
-}
 
-// MapFragment용 UseCase
-class GetMapDataUseCase @Inject constructor(
-    private val homeRepository: HomeRepository
-) {
-    fun getMapData(): Flow<List<MapData>> {
-        return homeRepository.activityList.map { activities ->
-            activities.map { activity ->
-                MapData(
-                    id = activity.actId.toLong(),
-                    location = activity.actLocation.toString(),
-                    title = activity.actTitle ?: "제목 없음",
-                    address = activity.actLocation ?: "장소 정보 없음"
-                )
-            }
+    /* 봉사 활동 정보 공유
+    * 홈 프레그먼트에서 검색한 활동을 받아오고
+    * 그 후에 맵 프레그먼트에서 관찰할 것
+     */
+    init {
+        homeRepository.activityList.asLiveData().observeForever { activities ->
+            _searchResults.value = activities
+            Log.d("testt", _searchResults.value.toString())
         }
     }
 }
