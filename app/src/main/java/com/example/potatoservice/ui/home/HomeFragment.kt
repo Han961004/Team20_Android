@@ -1,7 +1,6 @@
 package com.example.potatoservice.ui.home
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,16 +15,26 @@ import com.example.potatoservice.ui.detail.DetailActivity
 import com.example.potatoservice.ui.share.AdapterCallback
 import com.example.potatoservice.ui.share.Request
 import com.example.potatoservice.ui.share.SpinnerHintAdapter
+import com.example.potatoservice.ui.share.SpinnerList
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), AdapterCallback {
-
-
+    //선택된 정렬 코드 값
+    private var sortCode: String? = null
+    //선택된 시도 코드 값
+    private var sidoCode: Int? = null
+    //선택된 군구 코드 값
+    private var gunguCode: Int? = null
+    //선택된 카테고리 코드 값
+    private var category: String? = null
+    //선택된 나이 제한 값
+    private var teenPossibleOnly: Boolean? = null
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
     var numberOfElements: Int = 0
+    private var beforeDeadlineOnly: Boolean? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,17 +50,28 @@ class HomeFragment : Fragment(), AdapterCallback {
         binding.searchButton.setOnClickListener {
             val page = 0
             val size: Int? = null
-            val sort: String? = null
-            val sidoCode: Int? = null
-            val sidoGunguCode: Int? = null
-            val beforeDeadlineOnly: Boolean? = null
-            val teenPossibleOnly: Boolean? = null
-            val category: String? = null
-            val request = Request(page, size, sort, sidoCode, sidoGunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+            getBeforeDeadlineOnly()
+            //군구 코드가 있으면 시도 코드 자리를 널로 함.
+            val request = if(gunguCode != null) {
+                Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+            } else{
+                Request(page, size, sortCode, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
+            }
             homeViewModel.search(request)
         }
+
         getNumberOfElements()
         return binding.root
+    }
+
+    //마감 버튼 클릭 확인
+    private fun getBeforeDeadlineOnly(){
+        //마감 제외 버튼
+        beforeDeadlineOnly = if (binding.beforeDeadlindOnlyButton.isChecked){
+            true
+        }else{
+            null
+        }
     }
     //검색 결과 개수 업데이트
     private fun getNumberOfElements(){
@@ -60,6 +80,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             binding.invalidateAll()
         })
     }
+
     //검색 로딩 화면 설정
     private fun showSearchLoading() {
         homeViewModel.searchLoading.observe(viewLifecycleOwner, Observer { loading ->
@@ -75,10 +96,37 @@ class HomeFragment : Fragment(), AdapterCallback {
         })
 
     }
+
     //초기 스피너 설정 시 로딩 화면 구현
     private fun showSpinnerLoading() {
-        homeViewModel.sidoLodaing.observe(viewLifecycleOwner, Observer { sidoLoading ->
-            if(sidoLoading){
+        homeViewModel.sidoLoading.observe(viewLifecycleOwner, Observer { sidoLoading ->
+            if(sidoLoading or homeViewModel.gunguLoading.value!! or homeViewModel.categoryLoading.value!!){
+                //로딩 시작
+                binding.homeLayout.visibility = View.GONE
+                binding.loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.startShimmer()
+            }else{
+                //로딩 종료
+                binding.loadingLayout.stopShimmer()
+                binding.loadingLayout.visibility = View.GONE
+                binding.homeLayout.visibility = View.VISIBLE
+            }
+        })
+        homeViewModel.gunguLoading.observe(viewLifecycleOwner, Observer { gunguLoading ->
+            if(gunguLoading or homeViewModel.sidoLoading.value!! or homeViewModel.categoryLoading.value!!){
+                //로딩 시작
+                binding.homeLayout.visibility = View.GONE
+                binding.loadingLayout.visibility = View.VISIBLE
+                binding.loadingLayout.startShimmer()
+            }else{
+                //로딩 종료
+                binding.loadingLayout.stopShimmer()
+                binding.loadingLayout.visibility = View.GONE
+                binding.homeLayout.visibility = View.VISIBLE
+            }
+        })
+        homeViewModel.categoryLoading.observe(viewLifecycleOwner, Observer { categoryLoading ->
+            if(categoryLoading or homeViewModel.gunguLoading.value!! or homeViewModel.sidoLoading.value!!){
                 //로딩 시작
                 binding.homeLayout.visibility = View.GONE
                 binding.loadingLayout.visibility = View.VISIBLE
@@ -106,11 +154,15 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setSpinner() {
         //시도 리스트 받아 오기
         homeViewModel.searchSidoList()
+        //군구 리스트 받아 오기
+        homeViewModel.searchGunguList()
+        //카테고리 리스트 받아 오기
+        homeViewModel.searchCategoryList()
         // 정렬 스피너 설정
         val sortAdapter = ArrayAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.sortList
+            SpinnerList.sortList
         )
         sortAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.sort.adapter = sortAdapter
@@ -122,15 +174,20 @@ class HomeFragment : Fragment(), AdapterCallback {
                 position: Int,
                 id: Long
             ) {
+                sortCode = SpinnerList.sortCode[position]
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-        Log.d("testt", "${homeViewModel.sidoList.value?.forEach { it.sidoName }}")
+
+        //지역 대분류 스피너 설정
         homeViewModel.sidoList.observe(viewLifecycleOwner, Observer {sidoGunguList ->
+            //지역 대분류 시도 이름 리스트 저장
             val majorRegoinList = mutableListOf("지역 대분류")
             majorRegoinList.addAll(sidoGunguList.map { sidoGungu -> sidoGungu.sidoName })
-
+            // 지역 대분류 시도 코드 리스트 저장
+            val majorSidoCodeList = mutableListOf<Int>(0)
+            majorSidoCodeList.addAll(sidoGunguList.map { sidoGungu -> sidoGungu.sidoCode })
             // 지역 대분류 스피너 설정
             val majorRegionAdapter = SpinnerHintAdapter(
                 requireContext(),
@@ -148,11 +205,22 @@ class HomeFragment : Fragment(), AdapterCallback {
                         position: Int,
                         id: Long
                     ) {
+                        //지역 대분류 선택 시 선택된 시도 코드 저장
+                        var majorSidoCode: Int? = 0
+                        if (position != 0){
+                            sidoCode = majorSidoCodeList[position]
+                            majorSidoCode = sidoCode
+                        }else{
+                            sidoCode = null
+                        }
                         //지역 대분류 선택에 따라 소분류 목록이 바뀜
+                        val minorRegionList = homeViewModel.mappingGunguCode()[majorSidoCode]?.map {list->
+                            list[0] as String
+                        }
                         val minorRegionAdapter =SpinnerHintAdapter(
                             requireContext(),
                             com.example.potatoservice.R.layout.spinner_item,
-                            homeViewModel.minorRegoinList[position]
+                            minorRegionList
                         )
                         minorRegionAdapter.setDropDownViewResource(
                             com.example.potatoservice.R.layout.spinner_item_dropdown)
@@ -166,12 +234,11 @@ class HomeFragment : Fragment(), AdapterCallback {
                 }
         })
 
-
         //지역 소분류 스피너 설정
         val minorRegionAdapter =SpinnerHintAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.minorRegoinList[0]
+            homeViewModel.mappingGunguCode()[0]?.get(0) as List<String>
         )
         minorRegionAdapter.setDropDownViewResource(
             com.example.potatoservice.R.layout.spinner_item_dropdown)
@@ -185,6 +252,11 @@ class HomeFragment : Fragment(), AdapterCallback {
                     position: Int,
                     id: Long
                 ) {
+                    gunguCode = if (position != 0){
+                        homeViewModel.mappingGunguCode()[sidoCode]?.get(position)?.get(1) as Int
+                    }else{
+                        null
+                    }
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
@@ -192,39 +264,46 @@ class HomeFragment : Fragment(), AdapterCallback {
 
 
         // 봉사 분야 스피너 설정
-        val volunteerActivitiesAdapter = SpinnerHintAdapter(
-            requireContext(),
-            com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.volunteerList
-        )
-        volunteerActivitiesAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
-        binding.volunteerActivitiesCategories.adapter = volunteerActivitiesAdapter
-        //봉사 분야 선택 시
-        binding.volunteerActivitiesCategories.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    if (position != 0) {
+        homeViewModel.categoryList.observe(viewLifecycleOwner, Observer { categoryList ->
+            val categoryNameList = mutableListOf("봉사 분야")
+            categoryNameList.addAll(categoryList)
+            val volunteerActivitiesAdapter = SpinnerHintAdapter(
+                requireContext(),
+                com.example.potatoservice.R.layout.spinner_item,
+                categoryNameList
+            )
+            volunteerActivitiesAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
+            binding.volunteerActivitiesCategories.adapter = volunteerActivitiesAdapter
+            //봉사 분야 선택 시
+            binding.volunteerActivitiesCategories.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        if (position != 0) {
+                            category = categoryNameList[position]
+                        }else{
+                            category = null
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
 
                     }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
 
                 }
+        })
 
-            }
 
 
         // 나이 제한 스피너 설정
         val ageAdapter = SpinnerHintAdapter(
             requireContext(),
             com.example.potatoservice.R.layout.spinner_item,
-            homeViewModel.ageList
+            SpinnerList.ageList
         )
         ageAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.ageCategories.adapter = ageAdapter
@@ -236,7 +315,11 @@ class HomeFragment : Fragment(), AdapterCallback {
                 position: Int,
                 id: Long
             ) {
-
+                teenPossibleOnly = if (position != 0) {
+                    true
+                } else {
+                    null
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

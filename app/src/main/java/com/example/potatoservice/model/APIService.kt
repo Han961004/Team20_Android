@@ -64,7 +64,15 @@ interface APIService {
     fun getActivityDetail(
         @Path("activity_id") activityId: Int
     ): Call<ActivityDetail>
+
     //시도 목록 받음
     @GET("/api/v1/districts/sido")
     fun getSido(): Call<List<SidoGungu>>
+
+    //군구 목록 받음
+    @GET("/api/v1/districts/gungu")
+    fun getGungu(): Call<List<SidoGungu>>
+    //카테고리 목록 받음, 임시
+    @GET("/api/v1/activities/categories")
+    fun getCategory(): Call<List<String>>
 }
