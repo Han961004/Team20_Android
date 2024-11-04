@@ -5,6 +5,7 @@ import com.example.potatoservice.model.remote.ActivityResponse
 import com.example.potatoservice.model.remote.LoginRequest
 import com.example.potatoservice.model.remote.MarkerData
 import com.example.potatoservice.model.remote.SendSignUpUserInfo
+import com.example.potatoservice.model.remote.SidoGungu
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -43,6 +44,8 @@ interface APIService {
         @Query("page") page: Int,
         @Query("size") size: Int? = null,
         @Query("sort") sort: String? = null,
+        @Query("sidoCode") sidoCode: Int? = null,
+        @Query("sidoGunguCode") sidoGunguCode: Int? = null,
         @Query("beforeDeadlineOnly") beforeDeadlineOnly: Boolean? = null,
         @Query("teenPossibleOnly") teenPossibleOnly: Boolean? = null,
         @Query("category") category: String? = null
@@ -56,7 +59,16 @@ interface APIService {
         @Path("activity_id") activityId: Int
     ): Call<ActivityDetail>
 
+    //시도 목록 받음
+    @GET("/api/v1/districts/sido")
+    fun getSido(): Call<List<SidoGungu>>
 
+    //군구 목록 받음
+    @GET("/api/v1/districts/gungu")
+    fun getGungu(): Call<List<SidoGungu>>
+    //카테고리 목록 받음
+    @GET("/api/v1/activities/categories")
+    fun getCategory(): Call<List<String>>
 
 
 
