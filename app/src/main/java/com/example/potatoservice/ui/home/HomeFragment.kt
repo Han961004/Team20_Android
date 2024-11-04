@@ -1,6 +1,7 @@
 package com.example.potatoservice.ui.home
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.potatoservice.MainViewModel
 import com.example.potatoservice.databinding.FragmentHomeBinding
+import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.ui.detail.DetailActivity
 import com.example.potatoservice.ui.share.AdapterCallback
 import com.example.potatoservice.ui.share.Request
@@ -24,6 +27,8 @@ class HomeFragment : Fragment(), AdapterCallback {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+
     var numberOfElements: Int = 0
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +50,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             val category: String? = null
             val request = Request(page, size, sort, beforeDeadlineOnly, teenPossibleOnly, category)
             homeViewModel.search(request)
+            mainViewModel.searchHomeData(request) // ViewModel을 통해 검색 호출
         }
         getNumberOfElements()
         return binding.root
@@ -224,6 +230,14 @@ class HomeFragment : Fragment(), AdapterCallback {
         startActivity(intent)
     }
 
+
+    // 검색 결과를 관찰하여 UI 업데이트
+    private fun observeSearchResults() {
+        mainViewModel.searchResults.observe(viewLifecycleOwner, Observer { results ->
+            searchResultAdapter.submitList(results)
+            Log.d("testt", "Search results updated with ${results.size} items")
+        })
+    }
 
 
 }
