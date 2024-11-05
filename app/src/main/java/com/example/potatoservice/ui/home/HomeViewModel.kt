@@ -20,10 +20,7 @@ class HomeViewModel @Inject constructor(
     private val spinnerRepository: SpinnerRepository
 ) : AndroidViewModel(application) {
 
-//    val activityList: LiveData<List<Activity>> get() = homeRepository.activityList.asLiveData()
-    var activityList: LiveData<List<Activity>>  = MutableLiveData<List<Activity>>(
-        listOf(Activity(1, "테스트 봉사활동", "봉사 장소", "날짜", "날짜", "수행날짜", "수행날짜", 1, 1, 1, "카테고리"))
-    )
+    val activityList: LiveData<List<Activity>> get() = homeRepository.activityList.asLiveData()
 
     //검색 결과 개수
     val numberOfElements: LiveData<Int> get() = homeRepository.numberOfElements
