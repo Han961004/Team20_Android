@@ -150,8 +150,8 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setRecyclerAdapter() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(activity)
         searchResultAdapter = SearchResultAdapter(this)
-        homeViewModel.activityList.observe(viewLifecycleOwner, Observer { service ->
-            searchResultAdapter.submitList(service)
+        homeViewModel.activityList.observe(viewLifecycleOwner, Observer { activityList ->
+            searchResultAdapter.submitList(activityList)
             binding.searchResultRecyclerView.adapter = searchResultAdapter
         })
     }
