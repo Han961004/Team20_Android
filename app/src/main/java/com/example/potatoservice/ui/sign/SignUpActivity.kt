@@ -31,7 +31,7 @@ class SignUpActivity : AppCompatActivity() {
     /* 회원 가입 기입 사항
     * 나이 범위 -> 청소년, 대학생, 성인
     * 봉사 경험 -> 초급자, 중급자, 상급자
-     */
+    */
     private fun setupSelectionListeners() {
         val ageButtons = mapOf(
             binding.highSchoolButton to "청소년",

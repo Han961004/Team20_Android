@@ -145,9 +145,9 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setRecyclerAdapter() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(activity)
         searchResultAdapter = SearchResultAdapter(this)
+        binding.searchResultRecyclerView.adapter = searchResultAdapter
         homeViewModel.activityList.observe(viewLifecycleOwner, Observer { activityList ->
             searchResultAdapter.submitList(activityList)
-            binding.searchResultRecyclerView.adapter = searchResultAdapter
         })
     }
 
