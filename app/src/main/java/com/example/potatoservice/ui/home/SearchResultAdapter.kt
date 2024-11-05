@@ -1,8 +1,6 @@
 package com.example.potatoservice.ui.home
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -13,10 +11,10 @@ import com.example.potatoservice.ui.share.AdapterCallback
 
 class SearchResultAdapter(
 	private val callback: AdapterCallback
-): ListAdapter<Activity, SearchResultAdapter.ViewHolder>(
-	object : DiffUtil.ItemCallback<Activity>(){
+) : ListAdapter<Activity, SearchResultAdapter.ViewHolder>(
+	object : DiffUtil.ItemCallback<Activity>() {
 		override fun areItemsTheSame(oldItem: Activity, newItem: Activity): Boolean {
-			return oldItem === newItem
+			return oldItem.actId == newItem.actId
 		}
 
 		override fun areContentsTheSame(oldItem: Activity, newItem: Activity): Boolean {
@@ -24,24 +22,26 @@ class SearchResultAdapter(
 		}
 	}
 ) {
-	private lateinit var binding: ServiceItemBinding
 	inner class ViewHolder(
-		itemView: View
-	) : RecyclerView.ViewHolder(itemView) {
+		private val binding: ServiceItemBinding
+	) : RecyclerView.ViewHolder(binding.root) {
 
+		fun bind(activity: Activity) {
+			binding.activity = activity
+			binding.root.setOnClickListener {
+				callback.onClicked(activity.actId)
+			}
+		}
 	}
 
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 		val inflater = LayoutInflater.from(parent.context)
-		binding = ServiceItemBinding.inflate(inflater, parent, false)
-		return ViewHolder(binding.root)
+		val binding = ServiceItemBinding.inflate(inflater, parent, false)
+		return ViewHolder(binding)
 	}
 
 	override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-		val activity: Activity = getItem(position)
-		binding.activity = activity
-		holder.itemView.setOnClickListener {
-			callback.onClicked(activity.actId)
-		}
+		val activity = getItem(position)
+		holder.bind(activity)
 	}
 }
