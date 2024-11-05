@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.potatoservice.MainViewModel
 import com.example.potatoservice.databinding.FragmentHomeBinding
-import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.ui.detail.DetailActivity
 import com.example.potatoservice.ui.share.AdapterCallback
 import com.example.potatoservice.ui.share.Request
@@ -62,7 +61,6 @@ class HomeFragment : Fragment(), AdapterCallback {
             } else{
                 Request(page, size, sortCode, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
             }
-            homeViewModel.search(request)
             mainViewModel.searchHomeData(request) // ViewModel을 통해 검색 호출
         }
 
@@ -150,7 +148,7 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setRecyclerAdapter() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(activity)
         searchResultAdapter = SearchResultAdapter(this)
-        homeViewModel.activityList.observe(viewLifecycleOwner, Observer { activityList ->
+        mainViewModel.searchResults.observe(viewLifecycleOwner, Observer { activityList ->
             searchResultAdapter.submitList(activityList)
             binding.searchResultRecyclerView.adapter = searchResultAdapter
         })
@@ -341,14 +339,6 @@ class HomeFragment : Fragment(), AdapterCallback {
         startActivity(intent)
     }
 
-
-    // 검색 결과를 관찰하여 UI 업데이트
-    private fun observeSearchResults() {
-        mainViewModel.searchResults.observe(viewLifecycleOwner, Observer { results ->
-            searchResultAdapter.submitList(results)
-            Log.d("testt", "Search results updated with ${results.size} items")
-        })
-    }
 
 
 }

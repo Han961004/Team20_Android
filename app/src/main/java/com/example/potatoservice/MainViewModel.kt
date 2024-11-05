@@ -20,7 +20,7 @@ class MainViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
+    //봉사 활동 검색 결과 리스트
     private val _searchResults = MutableLiveData<List<Activity>>()
     val searchResults: LiveData<List<Activity>> get() = _searchResults
 
