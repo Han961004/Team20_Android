@@ -21,3 +21,21 @@ object RetrofitClient {
         return retrofit.create(APIService::class.java)
     }
 }
+
+
+// 카카오 레트로핏 주소가 별개라서 만들었씁니다.
+object KakaoRetrofitClient {
+    private const val KAKAO_BASE_URL = "https://dapi.kakao.com/"
+
+    // Retrofit 인스턴스를 생성하는 메서드
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(KAKAO_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    fun apiService(): APIService {
+        return retrofit.create(APIService::class.java)
+    }
+}

@@ -2,6 +2,7 @@ package com.example.potatoservice.model
 
 import com.example.potatoservice.model.remote.ActivityDetail
 import com.example.potatoservice.model.remote.ActivityResponse
+import com.example.potatoservice.model.remote.AddressResponse
 import com.example.potatoservice.model.remote.LoginRequest
 import com.example.potatoservice.model.remote.MarkerData
 import com.example.potatoservice.model.remote.SendSignUpUserInfo
@@ -78,6 +79,14 @@ interface APIService {
     ): Call<List<MarkerData>>
 
 
+
+
+    // 카카오 맵 API
+    @GET("v2/local/search/address.json")
+    fun searchAddress(
+        @Header("Authorization") apiKey: String,
+        @Query("query") address: String
+    ): Call<AddressResponse>
 
 
 }

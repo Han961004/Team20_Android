@@ -113,3 +113,48 @@ data class SidoGungu(
     val gunguName: String?,
     val sido: Boolean
 )
+
+
+
+
+// 카카오 맵 API DATA CLASS
+data class AddressResponse(
+    val meta: Meta,
+    val documents: List<Document>
+)
+
+data class Meta(
+    val total_count: Int,
+    val pageable_count: Int,
+    val is_end: Boolean
+)
+
+data class Document(
+    val address_name: String,
+    val x: String,  // 경도 (longitude)
+    val y: String,  // 위도 (latitude)
+    val address: Address?,
+    val road_address: RoadAddress?
+)
+
+data class Address(
+    val address_name: String,
+    val region_1depth_name: String,
+    val region_2depth_name: String,
+    val region_3depth_name: String,
+    val x: String,
+    val y: String
+)
+
+data class RoadAddress(
+    val address_name: String,
+    val road_name: String,
+    val main_building_no: String,
+    val sub_building_no: String,
+    val x: String,
+    val y: String
+)
+
+
+
+
