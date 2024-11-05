@@ -31,7 +31,7 @@ class MainViewModel @Inject constructor(
     val userInfo: LiveData<String> get() = _userInfo
 
     /*
-    * 굳이 없어도 되는 건지 나중에 확인
+    * 굳이 없어도 되는 건지 나중에 확인 -> 없어도 된다 지운다.
      */
     fun searchHomeData(request: Request) {
         homeRepository.search(request)
