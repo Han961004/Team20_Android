@@ -78,6 +78,4 @@ interface APIService {
     ): Call<List<MarkerData>>
 
 
-
-
 }
