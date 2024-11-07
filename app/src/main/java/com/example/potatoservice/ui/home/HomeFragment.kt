@@ -71,7 +71,7 @@ class HomeFragment : Fragment(), AdapterCallback {
     }
     //검색 요청을 만드는 함수
     private fun setRequest(): Request {
-        val size: Int? = 10
+        val size: Int? = 7
         getBeforeDeadlineOnly()
         //군구 코드가 있으면 시도 코드 자리를 널로 함.
         val request = if(gunguCode != null) {
@@ -164,15 +164,16 @@ class HomeFragment : Fragment(), AdapterCallback {
         searchResultAdapter = SearchResultAdapter(this)
 
         mainViewModel.searchResults.observe(viewLifecycleOwner, Observer { activityList ->
-            searchResultAdapter.submitList(activityList)
+            searchResultAdapter.submitListWithSetLoading(activityList)
             binding.searchResultRecyclerView.adapter = searchResultAdapter
-            searchResultAdapter.setLoading(false) // 로딩 표시기 숨김
+            searchResultAdapter.attachToRecyclerView(binding.searchResultRecyclerView)
+            searchResultAdapter.setNowItemCount(activityList.size)
             if (recyclerViewState != null && page != 0) {
                 binding.searchResultRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
                 recyclerViewState = null
             }
         })
-        searchResultAdapter.attachToRecyclerView(binding.searchResultRecyclerView)
+
     }
 
     //필터들 설정
