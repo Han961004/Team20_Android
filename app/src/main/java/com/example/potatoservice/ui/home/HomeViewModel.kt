@@ -21,6 +21,9 @@ class HomeViewModel @Inject constructor(
     //검색 결과 로딩 변수
     val searchLoading = homeRepository.loading
 
+    //마지막 페이지인지 알려주는 변수
+    val lastPage: LiveData<Boolean> get() = homeRepository.lastPage
+
 
     //지역 대분류
     val sidoList: LiveData<List<SidoGungu>> = spinnerRepository.sidoList

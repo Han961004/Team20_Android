@@ -94,6 +94,19 @@ data class ActivityDetail(
                 "기관 전화 번호 정보 없음"
             )
         )
+        val nullActivity = Activity(
+            -1,
+        null,
+        null,
+        null,
+        "noticeEndDate",
+        null,
+        "actEndDate",
+        -1,
+        -1,
+        -1,
+        "category"
+        )
     }
 }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.ui.home.HomeRepository
 import com.example.potatoservice.ui.share.Request
@@ -13,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,6 +48,12 @@ class MainViewModel @Inject constructor(
         _userInfo.value = userInfo.toString()
         Log.d("testt", "뷰모델 로그인 저장 : ${_userInfo.value}, ${_jwtToken.value}")
     }
+    //다음 페이지 검색 함수
+    fun loadMoreActivities(request: Request) {
+        viewModelScope.launch {
+            homeRepository.loadMoreActivities(request)
+        }
+    }
 
     /* 봉사 활동 정보 공유
     * 홈 프레그먼트에서 검색한 활동을 받아오고 
@@ -54,7 +62,6 @@ class MainViewModel @Inject constructor(
     init {
         homeRepository.activityList.asLiveData().observeForever { activities ->
             _searchResults.value = activities
-            Log.d("testt", _searchResults.value.toString())
         }
     }
 }
