@@ -4,9 +4,7 @@ import android.content.Context
 import android.widget.ArrayAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import com.example.potatoservice.MainViewModel
 import com.example.potatoservice.R
 import com.example.potatoservice.model.remote.AvatarInfo
 
@@ -79,7 +77,7 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
         vmSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown)
 
         //봉사시간
-        MyPageModel.volunteerHousr.observeForever {
+        MyPageModel.volunteerHours.observeForever {
             _vmVolunteerHours.value = it
             calculateEx(it)
         }
@@ -99,6 +97,10 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
             _vmNickname.value = it
         }
 
+        MyPageModel.volunteerList.observeForever{
+            _vmRecyclerViewCount.value = it.size
+        }
+
 
     }
 
@@ -114,17 +116,6 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
         _progressPercent.value = progressValue
     }
 
-    fun setVolunteerHours(){
-        MyPageModel.setVolunteerHours()
-    }
-
-    fun setVolunteerCount(){
-        MyPageModel.setVolunteerCount()
-    }
-
-    fun setRecyclerViewCount(){
-        MyPageModel.setRecyclerViewCount()
-    }
 
     // 다이얼로그 표시 상태 업데이트
     fun showNextDialog() {

@@ -125,3 +125,17 @@ data class SidoGungu(
 //    val ageRange : String,
 //    val exprienced : String
 //)
+
+data class VolunteerHistoryResponse(
+    val content: List<HistoryItem>
+)
+
+// 봉사 내역 항목
+data class HistoryItem(
+    val historyId: Int,
+    val avatarId: Int,
+    val activity: Activity,
+    val activityStatus: String,
+    val reviewed: Boolean
+)
+

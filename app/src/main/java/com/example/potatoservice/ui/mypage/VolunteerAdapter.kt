@@ -18,9 +18,9 @@ class VolunteerAdapter(
             // ViewBinding을 통해 뷰에 접근하여 데이터 바인딩
             binding.tvVolunteerTitle.text = volunteer.title
             binding.tvInstitutionName.text = volunteer.institution
-            binding.tvVolunteerField.text = volunteer.field
+            binding.tvVolunteerCategory.text = volunteer.Category
             binding.tvRecruitmentPeriod.text = volunteer.recruitmentPeriod
-            binding.tvRecruitmentCount.text = volunteer.recruitmentCount
+            binding.tvRecruitmentCount.text = volunteer.recruitmentCount.toString()
             binding.tvActivityPeriod.text = volunteer.activityPeriod
             binding.tvVolunteerHours.text = volunteer.volunteerHours
             binding.tvVolunteerAddress.text = volunteer.address

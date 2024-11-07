@@ -1,16 +1,16 @@
 package com.example.potatoservice.ui.share
 
 data class Volunteer(
-    val id: String,
-    val title: String,
-    val institution: String,
-    val field: String,
-    val recruitmentPeriod: String,
-    val recruitmentCount: String,
-    val activityPeriod: String,
-    val volunteerHours: String,
-    val address: String,
-    val status: String
+    val id: Int, //historyId
+    val title: String,  //봉사활동 제목
+    val institution: String, //기관
+    val Category: String,  //분야
+    val recruitmentPeriod: String, //모집기간
+    val recruitmentCount: Int,   //모집 인원
+    val activityPeriod: String, //봉사활동 기간
+    val volunteerHours: String, //봉사 인정 시간
+    val address: String,    //주소
+    val status: String,  //기록 상태 (신청완료, 확정대기, 수행완료)
 )
 
 //"actId" id

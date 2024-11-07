@@ -32,8 +32,10 @@ class MainViewModel @Inject constructor(
     private val _userInfo = MutableLiveData<AvatarInfo>()
     val userInfo: LiveData<AvatarInfo> get() = _userInfo
 
+    //유저 정보 세팅 (레벨, 닉네임, 히스토리...)
     fun setUserInfo(userInfo: AvatarInfo){
         MyPageModel.setMyPageModel(userInfo)
+        MyPageModel.getMyPageList(_jwtToken.value!!)
     }
 
 

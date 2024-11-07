@@ -54,7 +54,7 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
 
 //        myPageViewModel.setVolunteerHours()
 //        myPageViewModel.setVolunteerCount()
-        myPageViewModel.setRecyclerViewCount()
+//        myPageViewModel.setRecyclerViewCount()
         setUpInit()
 
     }
@@ -125,13 +125,13 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
 
         // 예시 데이터 리스트 생성
         //todo mvvm패턴 변경하기
-        val volunteers = listOf(
-            Volunteer("테스트id","봉사활동 1", "기관 A", "교육", "2024.09.01 ~ 2024.09.30", "0/5", "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중"),
-            Volunteer("테스트id","봉사활동 2", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨"),
-            Volunteer("테스트id","봉사활동 3", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨"),
-            Volunteer("테스트id","봉사활동 4", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨")
-            // 더 많은 데이터 추가 가능
+        val exVolunteerList = listOf(
+            Volunteer(1,"서버로부터 못 받아온거임", "기관 A", "교육",
+                "2024.09.01 ~ 2024.09.30", 5,
+                "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중")
         )
+        val volunteers = MyPageModel.volunteerList.value ?: exVolunteerList
+        Log.d("seyoung","MyPageFragment_어댑터 설정하기===${MyPageModel.volunteerList.value}")
 
         // 어댑터 설정
         val adapter = VolunteerAdapter(volunteers,this)
