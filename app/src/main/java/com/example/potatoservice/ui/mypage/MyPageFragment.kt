@@ -1,6 +1,7 @@
 package com.example.potatoservice.ui.mypage
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +26,8 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val myPageModel = MyPageModel(requireContext())
-        val factory = MyPageViewModelFactory(requireContext(), myPageModel)
+//        val myPageModel = MyPageModel(requireContext(),mainViewModel)
+        val factory = MyPageViewModelFactory(requireContext())
         myPageViewModel = ViewModelProvider(this, factory).get(MyPageViewModel::class.java)
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         binding.myPageSpinner.adapter = myPageViewModel.vmSpinnerAdapter
@@ -46,11 +47,13 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         * 해결 방안은 아마 retrofit으로 경험치를 실시간 주고 받아야 하거나, 참조를 sharedpreferences 가 아니라 따로 ViewModel에 저장시켜 놓으시는 게 좋을 것 같습니다.
          */
 //        myPageViewModel.jwtToken.observe(viewLifecycleOwner) { jwtToken -> Log.d("testt", "MyPage JWT Token: $jwtToken") }
-//        myPageViewModel.userInfo.observe(viewLifecycleOwner) { userInfo -> Log.d("testt", "MyPage User Info: $userInfo") }
+//        myPageViewModel.userInfo.observe(viewLifecycleOwner) { userInfo ->
+//            Log.d("testt", "MyPage User Info: $userInfo")
+//        }
 
 
-        myPageViewModel.setVolunteerHours()
-        myPageViewModel.setVolunteerCount()
+//        myPageViewModel.setVolunteerHours()
+//        myPageViewModel.setVolunteerCount()
         myPageViewModel.setRecyclerViewCount()
         setUpInit()
 
@@ -63,7 +66,14 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         setupTvTotalHours()
         setupTvTotalCount()
         setupRecyclerViewCount()
+        setupNickname()
+    }
 
+    //nickname 설정 함수
+    private fun setupNickname(){
+        myPageViewModel.vmNickname.observe(viewLifecycleOwner){
+            binding.tvNickname.text = it
+        }
     }
 
     // ProgressBar 설정 함수

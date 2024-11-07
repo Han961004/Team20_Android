@@ -76,7 +76,7 @@ class SignInActivity : AppCompatActivity() {
                         * SharedPreferences -> MainVM 저장 방법 변경
                         * 일단 shared 방식도 냅두겠습니다. Main에서 꺼내 써주세요.
                          */
-                        mainViewModel.setLoginData(jwtToken, avatarInfo?.toString())
+                        mainViewModel.setLoginData(jwtToken, avatarInfo!!)  //우선 avatarInfo가 null이 아니라고 확정
 
                         val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
                         with(sharedPref.edit()) {

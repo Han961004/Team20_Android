@@ -6,11 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
+import com.example.potatoservice.MainViewModel
 import com.example.potatoservice.R
+import com.example.potatoservice.model.remote.AvatarInfo
 
-class MyPageViewModel(private val context: Context, private val myPageModel: MyPageModel) : ViewModel() {
+class MyPageViewModel(private val context: Context) : ViewModel() {
 
 
+    //닉네임
+    private val _vmNickname = MutableLiveData<String>()
+    val vmNickname: LiveData<String> get() = _vmNickname
 
     //봉사시간
     private val _vmVolunteerHours = MutableLiveData<Int>()
@@ -33,11 +38,11 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     val vmLevel : MutableLiveData<Int> get() = _vmLevel
 
     //다이얼로그
-    private val _vmDialogArray: Array<DialogModel> = myPageModel.dialogArray
+    private val _vmDialogArray: Array<DialogModel> = MyPageModel.dialogArray
     val vmDialogArray: Array<DialogModel> get() = _vmDialogArray
 
     //스피너
-    private val vmSpinnerItems: Array<String> = myPageModel.spinnerItems
+    private val vmSpinnerItems: Array<String> = MyPageModel.spinnerItems
     var vmSpinnerAdapter: ArrayAdapter<String>
 
     //리사이클러뷰 count
@@ -64,7 +69,7 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     private val maxDialogCount = 5
 
     // 초기화 시점에 다이얼로그 배열 로드
-    private val dialogArray: Array<DialogModel> = myPageModel.dialogArray
+    private val dialogArray: Array<DialogModel> = MyPageModel.dialogArray
 
 
     //초기 설정
@@ -74,20 +79,26 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
         vmSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown)
 
         //봉사시간
-        myPageModel.volunteerHousr.observeForever {
+        MyPageModel.volunteerHousr.observeForever {
             _vmVolunteerHours.value = it
             calculateEx(it)
         }
 
         //봉사 횟수
-        myPageModel.volunteerCount.observeForever {
+        MyPageModel.volunteerCount.observeForever {
             _vmVolunteerCount.value = it
         }
 
         //리사이클러뷰 횟수
-        myPageModel.recyclerViewCount.observeForever {
+        MyPageModel.recyclerViewCount.observeForever {
             _vmRecyclerViewCount.value = it
         }
+
+        //닉네임
+        MyPageModel.ninkname.observeForever {
+            _vmNickname.value = it
+        }
+
 
     }
 
@@ -104,15 +115,15 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     }
 
     fun setVolunteerHours(){
-        myPageModel.setVolunteerHours()
+        MyPageModel.setVolunteerHours()
     }
 
     fun setVolunteerCount(){
-        myPageModel.setVolunteerCount()
+        MyPageModel.setVolunteerCount()
     }
 
     fun setRecyclerViewCount(){
-        myPageModel.setRecyclerViewCount()
+        MyPageModel.setRecyclerViewCount()
     }
 
     // 다이얼로그 표시 상태 업데이트
@@ -144,16 +155,19 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     * 이제 SharedPreferences에서 꺼내서 userInfo(아바타) 에는 현재 <닉네임, 나이대, 경험(횟수), 레벨(경험치?)> 이 담겨져 있습니다.
      */
 
-//    private val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-//    private val _jwtToken = MutableLiveData<String>()
-//    val jwtToken: LiveData<String> get() = _jwtToken
-//
-//    private val _userInfo = MutableLiveData<String?>() // userInfo를 JSON 문자열로 가정
-//    val userInfo: LiveData<String?> get() = _userInfo
-//
-//    init {
+    private val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    private val _jwtToken = MutableLiveData<String>()
+    val jwtToken: LiveData<String> get() = _jwtToken
+
+    private val _userInfo = MutableLiveData<AvatarInfo>() // userInfo를 JSON 문자열로 가정
+    val userInfo: LiveData<AvatarInfo> get() = _userInfo
+
+
+
+    init {
 //        _jwtToken.value = sharedPref.getString("jwt_token", null)
 //        _userInfo.value = sharedPref.getString("user_info", null)
-//    }
+
+    }
 
 }

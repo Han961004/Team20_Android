@@ -105,6 +105,7 @@ data class Institute(
     val longitude:Double?,
     val phone:String
 )
+
 //시도군구 데이터 클래스
 data class SidoGungu(
     val sidoGunguCode:Int,
@@ -113,3 +114,14 @@ data class SidoGungu(
     val gunguName: String?,
     val sido: Boolean
 )
+
+//유저 데이터 클래스
+//data class UserInfo(
+//    val avatarId: Int,
+//    val totalActTime: Int,
+//    val totalActCount: Int,
+//    val avatarLevel: Int,
+//    val nickName: String,
+//    val ageRange : String,
+//    val exprienced : String
+//)
