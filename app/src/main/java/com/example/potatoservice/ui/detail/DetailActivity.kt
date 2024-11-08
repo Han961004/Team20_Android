@@ -7,6 +7,7 @@ import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
+
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -80,6 +81,7 @@ class DetailActivity : AppCompatActivity() {
 				Toast.makeText(this, "웹 브라우저 앱을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
 			}
 		}
+
 
 		//지도 기능들
 		setMapView()

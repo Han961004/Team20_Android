@@ -24,6 +24,7 @@ class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerCl
     private val _vmVolunteerCount = MutableLiveData<Int>()
     val vmVolunteerCount: LiveData<Int> get() = _vmVolunteerCount
 
+
     //경험치바 값
     private val _progress = MutableLiveData<Int>()
     val progress: LiveData<Int> get() = _progress
@@ -59,6 +60,7 @@ class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerCl
     // 부정 응답 횟수
     private val _negativeCount = MutableLiveData<Int>(0)
     val negativeCount: LiveData<Int> get() = _negativeCount
+
 
     // 현재 다이얼로그 모델
     private val _currentDialogModel = MutableLiveData<DialogModel?>()
