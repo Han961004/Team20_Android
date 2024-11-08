@@ -4,13 +4,17 @@ import android.content.Context
 import android.widget.ArrayAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import com.example.potatoservice.R
+import com.example.potatoservice.model.remote.AvatarInfo
+import com.example.potatoservice.ui.share.Volunteer
 
-class MyPageViewModel(private val context: Context, private val myPageModel: MyPageModel) : ViewModel() {
+class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerClickListener {
 
 
+    //닉네임
+    private val _vmNickname = MutableLiveData<String>()
+    val vmNickname: LiveData<String> get() = _vmNickname
 
     //봉사시간
     private val _vmVolunteerHours = MutableLiveData<Int>()
@@ -27,18 +31,18 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
 
     //경험치바 퍼센트
     private val _progressPercent = MutableLiveData<Int>()
-    val progressPercent : LiveData<Int> get() = _progressPercent
+    val progressPercent: LiveData<Int> get() = _progressPercent
 
     //레벨
     private val _vmLevel = MutableLiveData<Int>()
-    val vmLevel : MutableLiveData<Int> get() = _vmLevel
+    val vmLevel: MutableLiveData<Int> get() = _vmLevel
 
     //다이얼로그
-    private val _vmDialogArray: Array<DialogModel> = myPageModel.dialogArray
+    private val _vmDialogArray: Array<DialogModel> = MyPageModel.dialogArray
     val vmDialogArray: Array<DialogModel> get() = _vmDialogArray
 
     //스피너
-    private val vmSpinnerItems: Array<String> = myPageModel.spinnerItems
+    private val vmSpinnerItems: Array<String> = MyPageModel.spinnerItems
     var vmSpinnerAdapter: ArrayAdapter<String>
 
     //리사이클러뷰 count
@@ -66,7 +70,12 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     private val maxDialogCount = 5
 
     // 초기화 시점에 다이얼로그 배열 로드
-    private val dialogArray: Array<DialogModel> = myPageModel.dialogArray
+    private val dialogArray: Array<DialogModel> = MyPageModel.dialogArray
+
+    //리사이클러뷰 어댑터
+    val vmVolunteerAdapter: VolunteerAdapter = VolunteerAdapter(
+        MyPageModel.volunteerHistoryList.value ?: emptyList(), this
+    )
 
 
     //초기 설정
@@ -76,46 +85,48 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
         vmSpinnerAdapter.setDropDownViewResource(R.layout.spinner_item_dropdown)
 
         //봉사시간
-        myPageModel.volunteerHousr.observeForever {
+        MyPageModel.volunteerHours.observeForever {
             _vmVolunteerHours.value = it
             calculateEx(it)
         }
 
         //봉사 횟수
-        myPageModel.volunteerCount.observeForever {
+        MyPageModel.volunteerCount.observeForever {
             _vmVolunteerCount.value = it
         }
 
         //리사이클러뷰 횟수
-        myPageModel.recyclerViewCount.observeForever {
+        MyPageModel.recyclerViewCount.observeForever {
             _vmRecyclerViewCount.value = it
         }
 
+        //닉네임
+        MyPageModel.ninkname.observeForever {
+            _vmNickname.value = it
+        }
+
+        //봉사내역 리사이클러뷰 설정,업데이트
+        MyPageModel.volunteerHistoryList.observeForever {
+            _vmRecyclerViewCount.value = it.size
+            vmVolunteerAdapter.setVolunteerList(it)
+        }
+
+
     }
+
 
 
     //봉사시간에 따라 레벨과 경험치 값 조정
     private fun calculateEx(hours: Int) {
         //봉사시간 10시간마다 레벨 업
         val level = hours / 10
-        val progressValue = (hours % 10)*10
+        val progressValue = (hours % 10) * 10
 
         _vmLevel.value = level
         _progress.value = progressValue
         _progressPercent.value = progressValue
     }
 
-    fun setVolunteerHours(){
-        myPageModel.setVolunteerHours()
-    }
-
-    fun setVolunteerCount(){
-        myPageModel.setVolunteerCount()
-    }
-
-    fun setRecyclerViewCount(){
-        myPageModel.setRecyclerViewCount()
-    }
 
     // 다이얼로그 표시 상태 업데이트
     fun showNextDialog() {
@@ -139,6 +150,11 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
         _negativeCount.value = (_negativeCount.value ?: 0) + 1
         showNextDialog() // 다음 다이얼로그 표시
     }
+
+    override fun onVolunteerClick(volunteer: Volunteer) {
+        showNextDialog() // 다이얼로그 표시 요청
+    }
+
 //=======
 
     /* 김동한
@@ -146,16 +162,12 @@ class MyPageViewModel(private val context: Context, private val myPageModel: MyP
     * 이제 SharedPreferences에서 꺼내서 userInfo(아바타) 에는 현재 <닉네임, 나이대, 경험(횟수), 레벨(경험치?)> 이 담겨져 있습니다.
      */
 
-//    private val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
-//    private val _jwtToken = MutableLiveData<String>()
-//    val jwtToken: LiveData<String> get() = _jwtToken
-//
-//    private val _userInfo = MutableLiveData<String?>() // userInfo를 JSON 문자열로 가정
-//    val userInfo: LiveData<String?> get() = _userInfo
-//
-//    init {
-//        _jwtToken.value = sharedPref.getString("jwt_token", null)
-//        _userInfo.value = sharedPref.getString("user_info", null)
-//    }
+    private val sharedPref = context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+    private val _jwtToken = MutableLiveData<String>()
+    val jwtToken: LiveData<String> get() = _jwtToken
+
+    private val _userInfo = MutableLiveData<AvatarInfo>() // userInfo를 JSON 문자열로 가정
+    val userInfo: LiveData<AvatarInfo> get() = _userInfo
+
 
 }

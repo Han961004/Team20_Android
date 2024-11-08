@@ -1,6 +1,7 @@
 package com.example.potatoservice.ui.mypage
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +26,8 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val myPageModel = MyPageModel(requireContext())
-        val factory = MyPageViewModelFactory(requireContext(), myPageModel)
+//        val myPageModel = MyPageModel(requireContext(),mainViewModel)
+        val factory = MyPageViewModelFactory(requireContext())
         myPageViewModel = ViewModelProvider(this, factory).get(MyPageViewModel::class.java)
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         binding.myPageSpinner.adapter = myPageViewModel.vmSpinnerAdapter
@@ -46,13 +47,14 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         * 해결 방안은 아마 retrofit으로 경험치를 실시간 주고 받아야 하거나, 참조를 sharedpreferences 가 아니라 따로 ViewModel에 저장시켜 놓으시는 게 좋을 것 같습니다.
          */
 //        myPageViewModel.jwtToken.observe(viewLifecycleOwner) { jwtToken -> Log.d("testt", "MyPage JWT Token: $jwtToken") }
-//        myPageViewModel.userInfo.observe(viewLifecycleOwner) { userInfo -> Log.d("testt", "MyPage User Info: $userInfo") }
+//        myPageViewModel.userInfo.observe(viewLifecycleOwner) { userInfo ->
+//            Log.d("testt", "MyPage User Info: $userInfo")
+//        }
 
 
-
-        myPageViewModel.setVolunteerHours()
-        myPageViewModel.setVolunteerCount()
-        myPageViewModel.setRecyclerViewCount()
+//        myPageViewModel.setVolunteerHours()
+//        myPageViewModel.setVolunteerCount()
+//        myPageViewModel.setRecyclerViewCount()
         setUpInit()
 
     }
@@ -64,7 +66,14 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         setupTvTotalHours()
         setupTvTotalCount()
         setupRecyclerViewCount()
+        setupNickname()
+    }
 
+    //nickname 설정 함수
+    private fun setupNickname(){
+        myPageViewModel.vmNickname.observe(viewLifecycleOwner){
+            binding.tvNickname.text = it
+        }
     }
 
     // ProgressBar 설정 함수
@@ -118,17 +127,16 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
 
         // 예시 데이터 리스트 생성
         //todo mvvm패턴 변경하기
-        val volunteers = listOf(
-            Volunteer("테스트id","봉사활동 1", "기관 A", "교육", "2024.09.01 ~ 2024.09.30", "0/5", "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중"),
-            Volunteer("테스트id","봉사활동 2", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨"),
-            Volunteer("테스트id","봉사활동 3", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨"),
-            Volunteer("테스트id","봉사활동 4", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨")
-            // 더 많은 데이터 추가 가능
-        )
+//        val exVolunteerList = listOf(
+//            Volunteer(1,"서버로부터 못 받아온거임", "기관 A", "교육",
+//                "2024.09.01 ~ 2024.09.30", 5,
+//                "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중")
+//        )
+//        val volunteers = MyPageModel.volunteerList.value ?: exVolunteerList
+//        Log.d("seyoung","MyPageFragment_어댑터 설정하기===${MyPageModel.volunteerList.value}")
 
         // 어댑터 설정
-        val adapter = VolunteerAdapter(volunteers,this)
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = myPageViewModel.vmVolunteerAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 

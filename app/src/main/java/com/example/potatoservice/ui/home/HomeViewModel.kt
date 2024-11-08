@@ -3,12 +3,7 @@ package com.example.potatoservice.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import com.example.potatoservice.model.remote.Activity
-import com.example.potatoservice.model.remote.ActivityDetail.Companion.nullActivityDetail
 import com.example.potatoservice.model.remote.SidoGungu
-import com.example.potatoservice.ui.share.Request
 import com.example.potatoservice.ui.share.SpinnerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -20,22 +15,15 @@ class HomeViewModel @Inject constructor(
     private val spinnerRepository: SpinnerRepository
 ) : AndroidViewModel(application) {
 
-//    val activityList: LiveData<List<Activity>> get() = homeRepository.activityList.asLiveData()
-    var activityList: LiveData<List<Activity>>  = MutableLiveData<List<Activity>>(
-        listOf(Activity(1, "테스트 봉사활동", "봉사 장소", "날짜", "날짜", "수행날짜", "수행날짜", 1, 1, 1, "카테고리"))
-    )
-
     //검색 결과 개수
     val numberOfElements: LiveData<Int> get() = homeRepository.numberOfElements
 
     //검색 결과 로딩 변수
     val searchLoading = homeRepository.loading
 
-    //검색 기능
-    fun search(request: Request) {
-        homeRepository.search(request)
-        //mainActivityViewModel.search(request)
-    }
+    //마지막 페이지인지 알려주는 변수
+    val lastPage: LiveData<Boolean> get() = homeRepository.lastPage
+
 
     //지역 대분류
     val sidoList: LiveData<List<SidoGungu>> = spinnerRepository.sidoList

@@ -7,7 +7,7 @@ interface HomeSearchData {
 	fun search(request: Request, callback: LoadCallback)
 
 	interface LoadCallback {
-		fun onLoaded(activities: List<Activity>, numberOfElements:Int)
+		fun onLoaded(activities: List<Activity>, numberOfElements: Int, last: Boolean)
 		fun onFailed()
 	}
 

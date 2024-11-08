@@ -13,7 +13,9 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import androidx.lifecycle.viewModelScope
+import com.example.potatoservice.model.KakaoRetrofitClient
 import com.example.potatoservice.model.RetrofitClient
+import com.example.potatoservice.model.remote.AddressResponse
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelTextStyle
 import kotlinx.coroutines.Dispatchers
@@ -125,5 +127,53 @@ class MapViewModel : ViewModel() {
         kakaoMap.moveCamera(cameraUpdate)
 
     }
+
+
+
+
+
+
+    /* 주소를 좌표로 변환
+    * 레트로핏을 사용, 스프링 서버로 부터 actLocation 을 받으면 카카오 주소 검색 API 사용하여 좌표를 받습니다.
+     */
+    private val _coordinates = MutableLiveData<Pair<Double, Double>?>()
+    val coordinates: LiveData<Pair<Double, Double>?> get() = _coordinates
+    fun fetchCoordinates(address: String) {
+        val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"  // Kakao REST API 키를 설정하세요
+        val apiService = KakaoRetrofitClient.apiService()  // Retrofit을 통해 API 서비스 호출
+
+        apiService.searchAddress(apiKey, address).enqueue(object : Callback<AddressResponse> {
+            override fun onResponse(call: Call<AddressResponse>, response: Response<AddressResponse>) {
+                if (response.isSuccessful) {
+                    val documents = response.body()?.documents
+                    if (!documents.isNullOrEmpty()) {
+                        val firstResult = documents[0]
+                        val longitude = firstResult.x.toDoubleOrNull()
+                        val latitude = firstResult.y.toDoubleOrNull()
+                        if (longitude != null && latitude != null) {
+                            _coordinates.postValue(Pair(latitude, longitude))
+                            Log.d("testt", "주소 변환 성공: $latitude, $longitude")
+                        } else {
+                            Log.e("testt", "좌표 변환 실패: 좌표 값이 null입니다.")
+                        }
+                    } else {
+                        Log.e("testt", "검색 결과 없음")
+                        _coordinates.postValue(null)
+                    }
+                } else {
+                    Log.e("testt", "API 응답 실패: ${response.message()}")
+                    _coordinates.postValue(null)
+                }
+            }
+
+            override fun onFailure(call: Call<AddressResponse>, t: Throwable) {
+                Log.e("testt", "API 요청 실패", t)
+                _coordinates.postValue(null)
+            }
+        })
+    }
+
+
+
 
 }
