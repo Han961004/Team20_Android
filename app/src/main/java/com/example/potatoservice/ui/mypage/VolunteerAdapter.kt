@@ -7,15 +7,13 @@ import com.example.potatoservice.databinding.ItemVolunteerBinding
 import com.example.potatoservice.ui.share.Volunteer
 
 class VolunteerAdapter(
-    private val volunteerList: List<Volunteer>,
+    private var volunteerList: List<Volunteer>,
     private val listener: OnVolunteerClickListener
-) :
-    RecyclerView.Adapter<VolunteerAdapter.VolunteerViewHolder>() {
+) : RecyclerView.Adapter<VolunteerAdapter.VolunteerViewHolder>() {
 
     inner class VolunteerViewHolder(val binding: ItemVolunteerBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(volunteer: Volunteer) {
-            // ViewBinding을 통해 뷰에 접근하여 데이터 바인딩
             binding.tvVolunteerTitle.text = volunteer.title
             binding.tvInstitutionName.text = volunteer.institution
             binding.tvVolunteerCategory.text = volunteer.Category
@@ -31,20 +29,22 @@ class VolunteerAdapter(
         }
     }
 
-    // 레이아웃 인플레이트
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VolunteerViewHolder {
-        val binding =
-            ItemVolunteerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemVolunteerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return VolunteerViewHolder(binding)
     }
 
-    // 데이터와 뷰 연결
     override fun onBindViewHolder(holder: VolunteerViewHolder, position: Int) {
         holder.bind(volunteerList[position])
     }
 
-    // 아이템 수를 반환
     override fun getItemCount(): Int {
         return volunteerList.size
     }
+
+    fun setVolunteerList(newList: List<Volunteer>) {
+        volunteerList = newList
+        notifyDataSetChanged()
+    }
 }
+

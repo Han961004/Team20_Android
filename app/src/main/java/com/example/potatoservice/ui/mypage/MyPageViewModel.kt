@@ -7,8 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.potatoservice.R
 import com.example.potatoservice.model.remote.AvatarInfo
+import com.example.potatoservice.ui.share.Volunteer
 
-class MyPageViewModel(private val context: Context) : ViewModel() {
+class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerClickListener {
 
 
     //닉네임
@@ -29,11 +30,11 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
 
     //경험치바 퍼센트
     private val _progressPercent = MutableLiveData<Int>()
-    val progressPercent : LiveData<Int> get() = _progressPercent
+    val progressPercent: LiveData<Int> get() = _progressPercent
 
     //레벨
     private val _vmLevel = MutableLiveData<Int>()
-    val vmLevel : MutableLiveData<Int> get() = _vmLevel
+    val vmLevel: MutableLiveData<Int> get() = _vmLevel
 
     //다이얼로그
     private val _vmDialogArray: Array<DialogModel> = MyPageModel.dialogArray
@@ -69,6 +70,11 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
     // 초기화 시점에 다이얼로그 배열 로드
     private val dialogArray: Array<DialogModel> = MyPageModel.dialogArray
 
+    //리사이클러뷰 어댑터
+    val vmVolunteerAdapter: VolunteerAdapter = VolunteerAdapter(
+        MyPageModel.volunteerHistoryList.value ?: emptyList(), this
+    )
+
 
     //초기 설정
     init {
@@ -97,19 +103,22 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
             _vmNickname.value = it
         }
 
-        MyPageModel.volunteerList.observeForever{
+        //봉사내역 리사이클러뷰 설정,업데이트
+        MyPageModel.volunteerHistoryList.observeForever {
             _vmRecyclerViewCount.value = it.size
+            vmVolunteerAdapter.setVolunteerList(it)
         }
 
 
     }
 
 
+
     //봉사시간에 따라 레벨과 경험치 값 조정
     private fun calculateEx(hours: Int) {
         //봉사시간 10시간마다 레벨 업
         val level = hours / 10
-        val progressValue = (hours % 10)*10
+        val progressValue = (hours % 10) * 10
 
         _vmLevel.value = level
         _progress.value = progressValue
@@ -139,6 +148,11 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
         _negativeCount.value = (_negativeCount.value ?: 0) + 1
         showNextDialog() // 다음 다이얼로그 표시
     }
+
+    override fun onVolunteerClick(volunteer: Volunteer) {
+        showNextDialog() // 다이얼로그 표시 요청
+    }
+
 //=======
 
     /* 김동한
@@ -153,12 +167,5 @@ class MyPageViewModel(private val context: Context) : ViewModel() {
     private val _userInfo = MutableLiveData<AvatarInfo>() // userInfo를 JSON 문자열로 가정
     val userInfo: LiveData<AvatarInfo> get() = _userInfo
 
-
-
-    init {
-//        _jwtToken.value = sharedPref.getString("jwt_token", null)
-//        _userInfo.value = sharedPref.getString("user_info", null)
-
-    }
 
 }

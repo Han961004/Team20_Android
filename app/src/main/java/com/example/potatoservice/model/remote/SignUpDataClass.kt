@@ -13,12 +13,12 @@ data class LoginRequest(
 * 유저 정보의 <객체> 닉네임, 나이대, 경험, 레벨 등
  */
 data class AvatarInfo(
-    val avatarId: Int,
-    val avatarExp: Int,
-    val avatarLevel: Int,
-    val nickName: String,
-    val ageRange: String,
-    val experienced: String
+    val avatarId: Int,  //개인 아바타 id
+    val avatarExp: Int, //경험치
+    val avatarLevel: Int,   //레벨
+    val nickName: String,   //닉네임
+    val ageRange: String,   //나이대
+    val experienced: String //봉사 경험정도
 ) : Serializable
 
 /* 회원 가입 요청

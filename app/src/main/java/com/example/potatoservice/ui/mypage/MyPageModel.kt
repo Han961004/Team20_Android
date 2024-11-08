@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.example.potatoservice.R
 import com.example.potatoservice.model.RetrofitClient
 import com.example.potatoservice.model.remote.AvatarInfo
-import com.example.potatoservice.model.remote.HistoryItem
 import com.example.potatoservice.model.remote.VolunteerHistoryResponse
 import com.example.potatoservice.ui.share.Volunteer
 import retrofit2.Call
@@ -66,10 +65,10 @@ object MyPageModel {
     val recyclerViewCount = MutableLiveData<Int>()
 
     //봉사 내역 리스트
-    val volunteerList = MutableLiveData<List<Volunteer>>()
+    val volunteerHistoryList = MutableLiveData<List<Volunteer>>()
 
     //todo 봉사 내역 서버로부터 받기
-    fun getMyPageList(jwtToken: String) {
+    fun getMyPageList(jwtToken: String){
         RetrofitClient.apiService().getHistory("Bearer $jwtToken").enqueue(object : Callback<VolunteerHistoryResponse> {
             override fun onResponse(
                 call: Call<VolunteerHistoryResponse>,
@@ -84,7 +83,7 @@ object MyPageModel {
                     Log.d("seyoung", "historyItems = ${historyItems}")
 
                     // HistoryItem을 Volunteer로 변환
-                    volunteerList.value = historyItems.map { historyItem ->
+                    volunteerHistoryList.value = historyItems.map { historyItem ->
                         Volunteer(
                             id = historyItem.historyId,
                             title = historyItem.activity.actTitle ?: "제목 없음",
@@ -99,8 +98,8 @@ object MyPageModel {
                         )
                     }
 
-                    Log.d("seyoung", "getMyPageList결과 = ${volunteerList}")
-                    Log.d("seyoung", "getMyPageList.value결과 = ${volunteerList.value}")
+                    Log.d("seyoung", "getMyPageList결과 = ${volunteerHistoryList}")
+                    Log.d("seyoung", "getMyPageList.value결과 = ${volunteerHistoryList.value}")
                 }
                 else{
                     Log.d("seyoung","getMyPageList response.isSuccessful 실패")
@@ -112,6 +111,7 @@ object MyPageModel {
                 Log.d("seyoung","MyPageModel에서 getMyPageList가 실패함 ㅠ")
             }
         })
+
     }
 
 

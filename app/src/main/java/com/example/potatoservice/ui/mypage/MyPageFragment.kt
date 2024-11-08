@@ -125,17 +125,16 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
 
         // 예시 데이터 리스트 생성
         //todo mvvm패턴 변경하기
-        val exVolunteerList = listOf(
-            Volunteer(1,"서버로부터 못 받아온거임", "기관 A", "교육",
-                "2024.09.01 ~ 2024.09.30", 5,
-                "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중")
-        )
-        val volunteers = MyPageModel.volunteerList.value ?: exVolunteerList
-        Log.d("seyoung","MyPageFragment_어댑터 설정하기===${MyPageModel.volunteerList.value}")
+//        val exVolunteerList = listOf(
+//            Volunteer(1,"서버로부터 못 받아온거임", "기관 A", "교육",
+//                "2024.09.01 ~ 2024.09.30", 5,
+//                "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중")
+//        )
+//        val volunteers = MyPageModel.volunteerList.value ?: exVolunteerList
+//        Log.d("seyoung","MyPageFragment_어댑터 설정하기===${MyPageModel.volunteerList.value}")
 
         // 어댑터 설정
-        val adapter = VolunteerAdapter(volunteers,this)
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = myPageViewModel.vmVolunteerAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
