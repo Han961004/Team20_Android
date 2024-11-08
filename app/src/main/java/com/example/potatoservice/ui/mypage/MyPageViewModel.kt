@@ -115,7 +115,6 @@ class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerCl
     }
 
 
-
     //봉사시간에 따라 레벨과 경험치 값 조정
     private fun calculateEx(hours: Int) {
         //봉사시간 10시간마다 레벨 업
