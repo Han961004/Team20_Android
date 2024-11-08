@@ -8,7 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.potatoservice.model.remote.Activity
+import com.example.potatoservice.model.remote.AvatarInfo
 import com.example.potatoservice.ui.home.HomeRepository
+import com.example.potatoservice.ui.mypage.MyPageModel
 import com.example.potatoservice.ui.share.Request
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -29,8 +31,15 @@ class MainViewModel @Inject constructor(
     private val _jwtToken = MutableLiveData<String>()
     val jwtToken: LiveData<String> get() = _jwtToken
 
-    private val _userInfo = MutableLiveData<String>()
-    val userInfo: LiveData<String> get() = _userInfo
+    private val _userInfo = MutableLiveData<AvatarInfo>()
+    val userInfo: LiveData<AvatarInfo> get() = _userInfo
+
+    //유저 정보 세팅 (레벨, 닉네임, 히스토리...)
+    fun setUserInfo(userInfo: AvatarInfo){
+        MyPageModel.setMyPageModel(userInfo)
+        MyPageModel.getMyPageList(_jwtToken.value!!)
+    }
+
 
     /*
     * 굳이 없어도 되는 건지 나중에 확인 -> 없어도 된다 지운다.
@@ -43,10 +52,11 @@ class MainViewModel @Inject constructor(
     /* 아바타 정보 공유
     * SignInActivity 에서 ViewModel에 넣었던 값 받아오기
      */
-    fun setLoginData(token: String, userInfo: String?) {
+    fun setLoginData(token: String, userInfo: AvatarInfo) {
         _jwtToken.value = token
-        _userInfo.value = userInfo.toString()
+        _userInfo.value = userInfo
         Log.d("testt", "뷰모델 로그인 저장 : ${_userInfo.value}, ${_jwtToken.value}")
+        setUserInfo(userInfo)
     }
     //다음 페이지 검색 함수
     fun loadMoreActivities(request: Request) {

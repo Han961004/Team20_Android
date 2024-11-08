@@ -5,13 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
 class MyPageViewModelFactory(
-    private val context: Context,
-    private val myPageModel: MyPageModel
+    private val context: Context
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MyPageViewModel::class.java)) {
-            return MyPageViewModel(context, myPageModel) as T
+            return MyPageViewModel(context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

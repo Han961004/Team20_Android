@@ -16,6 +16,7 @@ import com.example.potatoservice.ui.share.AdapterCallback
 class SearchResultAdapter(
 	private val callback: AdapterCallback
 ) : ListAdapter<Activity, RecyclerView.ViewHolder>(
+
 	object : DiffUtil.ItemCallback<Activity>() {
 		override fun areItemsTheSame(oldItem: Activity, newItem: Activity): Boolean {
 			return oldItem.actId == newItem.actId
