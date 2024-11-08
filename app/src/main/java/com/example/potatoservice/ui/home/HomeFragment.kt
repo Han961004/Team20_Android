@@ -1,6 +1,8 @@
 package com.example.potatoservice.ui.home
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.potatoservice.MainViewModel
 import com.example.potatoservice.databinding.FragmentHomeBinding
 import com.example.potatoservice.ui.detail.DetailActivity
 import com.example.potatoservice.ui.share.AdapterCallback
@@ -20,6 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), AdapterCallback {
+    //검색 페이지 값
+    private var page:Int = 0
     //선택된 정렬 코드 값
     private var sortCode: String? = null
     //선택된 시도 코드 값
@@ -33,8 +38,12 @@ class HomeFragment : Fragment(), AdapterCallback {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
     private val homeViewModel: HomeViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+
     var numberOfElements: Int = 0
     private var beforeDeadlineOnly: Boolean? = null
+    //리사이클러뷰 위지 정보
+    private var recyclerViewState: Parcelable? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,20 +57,29 @@ class HomeFragment : Fragment(), AdapterCallback {
         showSearchLoading()
         //검색 버튼 클릭 시
         binding.searchButton.setOnClickListener {
-            val page = 0
-            val size: Int? = null
-            getBeforeDeadlineOnly()
-            //군구 코드가 있으면 시도 코드 자리를 널로 함.
-            val request = if(gunguCode != null) {
-                Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
-            } else{
-                Request(page, size, sortCode, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
-            }
-            homeViewModel.search(request)
+            page = 0
+            search()
         }
 
         getNumberOfElements()
         return binding.root
+    }
+    //검색 함수
+    private fun search(){
+        val request = setRequest()
+        mainViewModel.searchHomeData(request) // ViewModel을 통해 검색 호출
+    }
+    //검색 요청을 만드는 함수
+    private fun setRequest(): Request {
+        val size: Int? = 7
+        getBeforeDeadlineOnly()
+        //군구 코드가 있으면 시도 코드 자리를 널로 함.
+        val request = if(gunguCode != null) {
+            Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category)
+        } else{
+            Request(page, size, sortCode, sidoCode, null,beforeDeadlineOnly, teenPossibleOnly, category)
+        }
+        return request
     }
 
     //마감 버튼 클릭 확인
@@ -144,10 +162,17 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setRecyclerAdapter() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(activity)
         searchResultAdapter = SearchResultAdapter(this)
-        homeViewModel.activityList.observe(viewLifecycleOwner, Observer { service ->
-            searchResultAdapter.submitList(service)
+        mainViewModel.searchResults.observe(viewLifecycleOwner, Observer { activityList ->
+            searchResultAdapter.submitListWithSetLoading(activityList)
             binding.searchResultRecyclerView.adapter = searchResultAdapter
+            searchResultAdapter.attachToRecyclerView(binding.searchResultRecyclerView)
+            searchResultAdapter.setNowItemCount(activityList.size)
+            if (recyclerViewState != null && page != 0) {
+                binding.searchResultRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
+                recyclerViewState = null
+            }
         })
+
     }
 
     //필터들 설정
@@ -334,7 +359,14 @@ class HomeFragment : Fragment(), AdapterCallback {
         intent.putExtra("id", id) // 데이터 추가
         startActivity(intent)
     }
-
-
-
+    //무한 스크롤 함수
+    override fun loadMoreActivities(recyclerViewState: Parcelable?) {
+        //검색 페이지가 마지막이 아니라면 계속 검색
+        if (homeViewModel.lastPage.value == false){
+            page += 1
+            this.recyclerViewState = recyclerViewState
+            val request = setRequest()
+            mainViewModel.loadMoreActivities(request)
+        }
+    }
 }
