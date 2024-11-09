@@ -7,6 +7,7 @@ import com.example.potatoservice.model.remote.LoginRequest
 import com.example.potatoservice.model.remote.MarkerData
 import com.example.potatoservice.model.remote.SendSignUpUserInfo
 import com.example.potatoservice.model.remote.SidoGungu
+import com.example.potatoservice.model.remote.VolunteerHistoryResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -67,17 +68,26 @@ interface APIService {
     //군구 목록 받음
     @GET("/api/v1/districts/gungu")
     fun getGungu(): Call<List<SidoGungu>>
+
     //카테고리 목록 받음
     @GET("/api/v1/activities/categories")
     fun getCategory(): Call<List<String>>
 
+    //회원 정보 받아오기
+//    @GET("/api/v1/avatars")
+//    fun getUserInfo() : Call<UserInfo>
+
+    //개인 봉사 내역 받아오기
+    @GET("/api/v1/histories")
+    fun getHistory(
+        @Header("Authorization") jwtToken: String
+    ) : Call<VolunteerHistoryResponse>
 
 
     // 지도 맵 마커 -> 삭제
     @GET("/api/markers")
     fun getMarkers(
     ): Call<List<MarkerData>>
-
 
 
 
@@ -90,3 +100,4 @@ interface APIService {
 
 
 }
+

@@ -118,6 +118,7 @@ data class Institute(
     val longitude:Double?,
     val phone:String
 )
+
 //시도군구 데이터 클래스
 data class SidoGungu(
     val sidoGunguCode:Int,
@@ -127,7 +128,18 @@ data class SidoGungu(
     val sido: Boolean
 )
 
+data class VolunteerHistoryResponse(
+    val content: List<HistoryItem>
+)
 
+// 봉사 내역 항목
+data class HistoryItem(
+    val historyId: Int,
+    val avatarId: Int,
+    val activity: Activity,
+    val activityStatus: String,
+    val reviewed: Boolean
+)
 
 
 // 카카오 맵 API DATA CLASS
@@ -167,7 +179,6 @@ data class RoadAddress(
     val x: String,
     val y: String
 )
-
 
 
 

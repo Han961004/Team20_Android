@@ -1,179 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_plain"
-    android:fillViewport="true">
+    android:background="@color/base_beige_1"
+    android:paddingStart="35dp"
+    tools:context=".ui.sign.SignUpActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <TextView
+        android:id="@+id/infoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:text="회원가입"
+        android:textColor="#000000"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/nicknameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="닉네임"
+        android:textColor="@color/dark_gray"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/infoTextView" />
+
+    <EditText
+        android:id="@+id/nicknameEditText"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:hint="닉네임 입력해주세요"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/base_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nicknameLabel" />
+
+    <!-- 나이 구분 라디오 그룹 -->
+    <TextView
+        android:id="@+id/ageGroupLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="나이 구분"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nicknameEditText" />
+
+    <RadioGroup
+        android:id="@+id/ageRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ageGroupLabel">
 
-        <TextView
+        <RadioButton
+            android:id="@+id/middleSchoolButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:text="가입을 위해 기본 정보를 입력해주세요."
-            android:textColor="#000000"
-            android:textSize="16sp" />
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:text="중학생"
+            android:textColor="@color/black" />
 
-        <TextView
+        <RadioButton
+            android:id="@+id/highSchoolButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="닉네임"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:layout_marginStart="10dp"
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:text="고등학생"
+            android:textColor="@color/black" />
 
-        <EditText
-            android:id="@+id/nicknameEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:textColorHint="@color/light_blue_grey"
-            android:textColor="@color/black"
-            android:hint="닉네임 입력해주세요"
-            android:padding="8dp" />
-
-        <TextView
+        <RadioButton
+            android:id="@+id/universityButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="나이 구분"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:layout_marginStart="10dp"
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:text="대학생"
+            android:textColor="@color/black" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/middleSchoolButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_info_rounded_button_background_selector"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="중학생"
-                    android:textColor="@color/black"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/highSchoolButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_info_rounded_button_background_selector"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="고등학생"
-                    android:textColor="@color/black"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/universityButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_info_rounded_button_background_selector"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="대학생"
-                    android:textColor="@color/black"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/adultButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_info_rounded_button_background_selector"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="성인"
-                    android:textColor="@color/black"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <TextView
+        <RadioButton
+            android:id="@+id/adultButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="봉사 활동 경험"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:layout_marginStart="10dp"
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:text="성인"
+            android:textColor="@color/black" />
+    </RadioGroup>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    <!-- 봉사 활동 경험 라디오 그룹 -->
+    <TextView
+        android:id="@+id/experienceLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="봉사 활동 경험"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ageRadioGroup" />
+
+    <RadioGroup
+        android:id="@+id/experienceRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/experienceLabel">
+
+        <RadioButton
+            android:id="@+id/firstTimeButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:text="처음이에요"
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:textColor="@color/black" />
 
-            <Button
-                android:id="@+id/firstTimeButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="처음이에요" />
-
-            <Button
-                android:id="@+id/someExperienceButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="몇 번 해봤어요" />
-
-            <Button
-                android:id="@+id/lotsExperienceButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="많이 해본 편이에요" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/completeButton"
-            android:layout_width="match_parent"
+        <RadioButton
+            android:id="@+id/someExperienceButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:backgroundTint="#8000FF"
-            android:padding="16dp"
-            android:text="모두 입력했어요"
-            android:textColor="#FFFFFF" />
-    </LinearLayout>
-</ScrollView>
+            android:layout_marginStart="10dp"
+            android:text="몇 번 해봤어요"
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:textColor="@color/black" />
+
+        <RadioButton
+            android:id="@+id/lotsExperienceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="많이 해본 편이에요"
+            android:background="@drawable/selector_radio_button"
+            android:button="@null"
+            android:textColor="@color/black" />
+    </RadioGroup>
+
+    <!-- 완료 버튼 -->
+    <Button
+        android:id="@+id/completeButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_plain"
+        android:padding="16dp"
+        android:text="모두 입력했어요"
+        android:textColor="@color/point_brown_2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
