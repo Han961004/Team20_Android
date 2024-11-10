@@ -71,7 +71,10 @@ class HomeFragment : Fragment(), AdapterCallback {
     //검색 요청을 만드는 함수
     private fun setRequest(): Request {
         val size: Int? = 7
-        val keyword: String = binding.searchBar.text.toString()
+        var keyword: String? = binding.searchBar.text.toString()
+        if (keyword == ""){
+            keyword = null
+        }
         getBeforeDeadlineOnly()
         //군구 코드가 있으면 시도 코드 자리를 널로 함.
         val request = if(gunguCode != null) {

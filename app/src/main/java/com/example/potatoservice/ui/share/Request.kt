@@ -9,5 +9,5 @@ data class Request(
 	val beforeDeadlineOnly: Boolean?,
 	val teenPossibleOnly: Boolean?,
 	val category: String?,
-	val keyword: String
+	val keyword: String?
 )
