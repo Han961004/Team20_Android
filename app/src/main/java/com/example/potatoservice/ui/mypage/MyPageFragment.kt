@@ -86,6 +86,7 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         myPageViewModel.progressPercent.observe(viewLifecycleOwner){
             binding.tvProgressPercent.text = "${it}%"
         }
+
     }
 
     //총 봉사 건수 설정
@@ -94,6 +95,7 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
             binding.tvTotalVolunteerCount.text = "총 봉사 건수 : ${it} 건"
         })
     }
+
 
     //총 봉사 시간 설정
     private fun setupTvTotalHours(){

@@ -91,6 +91,7 @@ class MapViewModel : ViewModel() {
         _selectedMarker.value = null
     }
 
+
     // 지도에 라벨 추가
     fun addMarkersToMap(kakaoMap: KakaoMap) {
         val markerDataList = _markerDataList.value ?: return
