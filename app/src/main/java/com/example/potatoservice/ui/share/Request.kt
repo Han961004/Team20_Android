@@ -8,5 +8,6 @@ data class Request(
 	val sidoGunguCode: Int?,
 	val beforeDeadlineOnly: Boolean?,
 	val teenPossibleOnly: Boolean?,
-	val category: String?
+	val category: String?,
+	val keyword: String?
 )
