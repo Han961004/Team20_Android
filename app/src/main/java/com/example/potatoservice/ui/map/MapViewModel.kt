@@ -49,8 +49,33 @@ class MapViewModel : ViewModel() {
 
 
 
-    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf(MarkerData(37.870448, 127.746190, "test", "address", "설명", "기관", "모집기간", "모집인원", "활동 시간","활동 기간")))
+    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf())
     val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
+    // 기존 마커 데이터를 지우는 함수 추가
+    fun clearMarkerDataList() {
+        _markerDataList.value = listOf()
+    }
+
+    // 마커 데이터를 추가하는 함수
+    fun addMarkerData(lat: Double, lng: Double, title: String, address: String) {
+        val currentList = _markerDataList.value.orEmpty().toMutableList()
+        val newMarker = MarkerData(
+            lat = lat,
+            lng = lng,
+            title = title,
+            address = address,
+            description = "설명", // 필요에 따라 수정 가능
+            organization = "기관", // 필요에 따라 수정 가능
+            recruitmentPeriod = "모집기간",
+            recruitmentCount = "모집인원",
+            activityTime = "활동 시간",
+            activityPeriod = "활동 기간"
+        )
+        currentList.add(newMarker)
+        _markerDataList.value = currentList
+    }
+
+
     private val _selectedMarker = MutableLiveData<MarkerData?>()
     val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
 
@@ -94,6 +119,9 @@ class MapViewModel : ViewModel() {
 
     // 지도에 라벨 추가
     fun addMarkersToMap(kakaoMap: KakaoMap) {
+        // 기존 라벨 모두 제거?????
+        kakaoMap.labelManager?.removeAllLabelLayer()
+
         val markerDataList = _markerDataList.value ?: return
 
         for (markerData in markerDataList) {
