@@ -43,11 +43,10 @@ class MapFragment : Fragment() {
         mainViewModel.searchResults.observe(viewLifecycleOwner) { searchResults ->
             searchResults?.let { activities ->
                 mapViewModel.clearMarkerDataList()  // 이전 마커 데이터 초기화
-                activities.forEach { activity ->
-                    activity.actLocation?.let { location ->
-                        mapViewModel.fetchCoordinates(location)
-                    }
-                }
+                val addresses = activities.mapNotNull { it.actLocation }
+
+                // 여러 주소를 한번에 변환
+                mapViewModel.fetchCoordinatesList(addresses)
             }
         }
 
