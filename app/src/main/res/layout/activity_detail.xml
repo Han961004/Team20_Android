@@ -27,7 +27,7 @@
         <ScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/base_white"
             android:fillViewport="true">
 
@@ -38,7 +38,7 @@
                 android:layout_margin="5dp"
                 android:background="@color/base_white">
 
-<!--                봉사내용-->
+                <!--                봉사내용-->
                 <include
                     android:id="@+id/activity_detail_item"
                     layout="@layout/activity_detail_item"
@@ -50,15 +50,15 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:viewmodel="@{viewmodel}" />
 
-<!--                봉사 리뷰-->
+                <!--                봉사 리뷰-->
                 <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/bg_plain"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:layout_marginTop="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/activity_detail_item">
@@ -68,142 +68,100 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:text="@{@string/기관리뷰(institute.name)}"
-                        android:textSize="20sp"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/review1"
-                        android:textSize="15sp"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
 
-                    <LinearLayout
+                    <RatingBar
+                        android:id="@+id/ratingBar1"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ProgressBar
-                            android:id="@+id/progressBar1"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="200dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:max="100" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="10dp"
-                            android:text="@{viewmodel.review1 + '%'}"
-                            android:textColor="@color/black"/>
-                    </LinearLayout>
+                        android:layout_height="match_parent"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:rating="2.5"
+                        android:stepSize="0.5" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/review2"
-                        android:textSize="15sp"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
 
-                    <LinearLayout
+                    <RatingBar
+                        android:id="@+id/ratingBar2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ProgressBar
-                            android:id="@+id/progressBar2"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="200dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:max="100" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="10dp"
-                            android:text="@{viewmodel.review2 + '%'}"
-                            android:textColor="@color/black"/>
-                    </LinearLayout>
+                        android:layout_height="match_parent"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:rating="2.5"
+                        android:stepSize="0.5" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/review3"
-                        android:textSize="15sp"
-                        android:textColor="@color/black"/>
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
 
-                    <LinearLayout
+                    <RatingBar
+                        android:id="@+id/ratingBar3"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ProgressBar
-                            android:id="@+id/progressBar3"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:layout_width="200dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:max="100" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingStart="10dp"
-                            android:text="@{viewmodel.review3 + '%'}"
-                            android:textColor="@color/black"/>
-                    </LinearLayout>
+                        android:layout_height="match_parent"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:rating="2.5"
+                        android:stepSize="0.5" />
                 </LinearLayout>
 
-<!--                봉사활동위치-->
+                <!--                봉사활동위치-->
                 <TextView
                     android:id="@+id/volunteer_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:text="@string/volunteer_address"
-                    android:textSize="20sp"
                     android:textColor="@color/black"
+                    android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-                <Button
-                    android:id="@+id/map_size_up_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/지도"
-                    android:textColor="@color/point_brown_2"
-                    android:background="@drawable/bg_plain"
-                    app:layout_constraintBottom_toTopOf="@+id/detail_map_layout"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/volunteer_address"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-<!--                지도, 현재위치-->
+                <!--                지도, 현재위치-->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/detail_map_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/volunteer_address">
 
                     <com.kakao.vectormap.MapView
                         android:id="@+id/detail_map_view"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
+                        android:background="@color/base_gray"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="1.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
 
                     <ImageButton
                         android:id="@+id/button_current_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="80dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="30dp"
                         android:background="@drawable/ic_map_location_button_background"
                         android:padding="10dp"
                         android:scaleType="centerInside"
@@ -211,8 +169,21 @@
                         app:layout_constraintBottom_toBottomOf="@id/detail_map_view"
                         app:layout_constraintEnd_toEndOf="@id/detail_map_view" />
 
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <Button
+                    android:id="@+id/map_size_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_plain"
+                    android:text="@string/지도"
+                    android:textColor="@color/point_brown_2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/detail_map_layout"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="80dp"
+                    android:layout_marginTop="10dp"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -266,10 +237,10 @@
             android:id="@+id/detail_close"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginEnd="10dp"
+            android:layout_gravity="top|end"
             android:layout_marginTop="10dp"
-            android:src="@drawable/ic_close"
-            android:layout_gravity="top|end"/>
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_close" />
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/loading_layout"

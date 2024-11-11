@@ -88,10 +88,24 @@ data class ActivityDetail(
                 0,
                 "기관 정보 없음",
                 "기관 주소 정보 없음",
-                0.0,
-                0.0,
+                //강원대 위치
+                37.870448,
+                127.746190,
                 "기관 전화 번호 정보 없음"
             )
+        )
+        val nullActivity = Activity(
+            -1,
+        null,
+        null,
+        null,
+        "noticeEndDate",
+        null,
+        "actEndDate",
+        -1,
+        -1,
+        -1,
+        "category"
         )
     }
 }
@@ -104,6 +118,7 @@ data class Institute(
     val longitude:Double?,
     val phone:String
 )
+
 //시도군구 데이터 클래스
 data class SidoGungu(
     val sidoGunguCode:Int,
@@ -112,3 +127,58 @@ data class SidoGungu(
     val gunguName: String?,
     val sido: Boolean
 )
+
+data class VolunteerHistoryResponse(
+    val content: List<HistoryItem>
+)
+
+// 봉사 내역 항목
+data class HistoryItem(
+    val historyId: Int,
+    val avatarId: Int,
+    val activity: Activity,
+    val activityStatus: String,
+    val reviewed: Boolean
+)
+
+
+// 카카오 맵 API DATA CLASS
+data class AddressResponse(
+    val meta: Meta,
+    val documents: List<Document>
+)
+
+data class Meta(
+    val total_count: Int,
+    val pageable_count: Int,
+    val is_end: Boolean
+)
+
+data class Document(
+    val address_name: String,
+    val x: String,  // 경도 (longitude)
+    val y: String,  // 위도 (latitude)
+    val address: Address?,
+    val road_address: RoadAddress?
+)
+
+data class Address(
+    val address_name: String,
+    val region_1depth_name: String,
+    val region_2depth_name: String,
+    val region_3depth_name: String,
+    val x: String,
+    val y: String
+)
+
+data class RoadAddress(
+    val address_name: String,
+    val road_name: String,
+    val main_building_no: String,
+    val sub_building_no: String,
+    val x: String,
+    val y: String
+)
+
+
+

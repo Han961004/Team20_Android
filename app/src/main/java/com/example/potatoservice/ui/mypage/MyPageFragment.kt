@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.potatoservice.R
 import com.example.potatoservice.databinding.FragmentMypageBinding
 import com.example.potatoservice.ui.share.Volunteer
 
@@ -20,9 +19,6 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
     private lateinit var customDialog : CustomDialogFragment
     private lateinit var dialogArray : Array<DialogModel>
 
-    var dialogShowCount = 0
-    var positiveCount = 0
-    var negativeCount = 0
 
 
     override fun onCreateView(
@@ -30,13 +26,14 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val myPageModel = MyPageModel(requireContext())
-        val factory = MyPageViewModelFactory(requireContext(), myPageModel)
+//        val myPageModel = MyPageModel(requireContext(),mainViewModel)
+        val factory = MyPageViewModelFactory(requireContext())
         myPageViewModel = ViewModelProvider(this, factory).get(MyPageViewModel::class.java)
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         binding.myPageSpinner.adapter = myPageViewModel.vmSpinnerAdapter
 
         dialogArray = myPageViewModel.vmDialogArray
+        observeDialogModel()
 
         return binding.root
     }
@@ -44,10 +41,20 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /* 김동한
+        * 확인차 일단 MyPageFragment에 들어갈 때마다 잘 나오는지 Log를 찍어봤습니다. 나중에 지우셔도 됩니다.
+        * 단, 걱정되는게, 제 예상으로는 이게 로그인 한 다음 부터는 MyPage에서 경험치가 올라가도 실시간 반영이 안 될 수도 있습니다. 10시간이 채워져도 1레벨 -> 1레벨 그대로 일 수 있다는 것 입니다.
+        * 해결 방안은 아마 retrofit으로 경험치를 실시간 주고 받아야 하거나, 참조를 sharedpreferences 가 아니라 따로 ViewModel에 저장시켜 놓으시는 게 좋을 것 같습니다.
+         */
+//        myPageViewModel.jwtToken.observe(viewLifecycleOwner) { jwtToken -> Log.d("testt", "MyPage JWT Token: $jwtToken") }
+//        myPageViewModel.userInfo.observe(viewLifecycleOwner) { userInfo ->
+//            Log.d("testt", "MyPage User Info: $userInfo")
+//        }
 
-        myPageViewModel.setVolunteerHours()
-        myPageViewModel.setVolunteerCount()
-        myPageViewModel.setRecyclerViewCount()
+
+//        myPageViewModel.setVolunteerHours()
+//        myPageViewModel.setVolunteerCount()
+//        myPageViewModel.setRecyclerViewCount()
         setUpInit()
 
     }
@@ -59,7 +66,14 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
         setupTvTotalHours()
         setupTvTotalCount()
         setupRecyclerViewCount()
+        setupNickname()
+    }
 
+    //nickname 설정 함수
+    private fun setupNickname(){
+        myPageViewModel.vmNickname.observe(viewLifecycleOwner){
+            binding.tvNickname.text = it
+        }
     }
 
     // ProgressBar 설정 함수
@@ -111,57 +125,50 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
 
         // 예시 데이터 리스트 생성
         //todo mvvm패턴 변경하기
-        val volunteers = listOf(
-            Volunteer("테스트id","봉사활동 1", "기관 A", "교육", "2024.09.01 ~ 2024.09.30", "0/5", "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중"),
-            Volunteer("테스트id","봉사활동 2", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨"),
-            Volunteer("테스트id","봉사활동 3", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨"),
-            Volunteer("테스트id","봉사활동 4", "기관 B", "환경", "2024.08.01 ~ 2024.08.30", "3/10", "2024.09.01 ~ 2024.09.15", "32시간", "부산광역시", "신청 완료됨")
-            // 더 많은 데이터 추가 가능
-        )
+//        val exVolunteerList = listOf(
+//            Volunteer(1,"서버로부터 못 받아온거임", "기관 A", "교육",
+//                "2024.09.01 ~ 2024.09.30", 5,
+//                "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중")
+//        )
+//        val volunteers = MyPageModel.volunteerList.value ?: exVolunteerList
+//        Log.d("seyoung","MyPageFragment_어댑터 설정하기===${MyPageModel.volunteerList.value}")
 
         // 어댑터 설정
-        val adapter = VolunteerAdapter(volunteers,this)
-        binding.recyclerView.adapter = adapter
+        binding.recyclerView.adapter = myPageViewModel.vmVolunteerAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    override fun onVolunteerClick(volunteer: Volunteer) {
+    private fun observeDialogModel() {
+        // 다이얼로그 모델 관찰
+        myPageViewModel.currentDialogModel.observe(viewLifecycleOwner) { dialogModel ->
+            dialogModel?.let {
+                val customDialog = CustomDialogFragment.newInstance(it)
+                customDialog.setDialogListener(this)
+                customDialog.show(parentFragmentManager, "customDialog")
+            }
+        }
 
-//        val customDialog = CustomDialogFragment.newInstance(
-//            title = "테스트제목",
-//            image = R.drawable.potato_lv1,
-//            content = "1긴테스트내용2긴테스트내용3긴테스트내용4긴테스트내용5긴테스트내용6긴테스트내용7긴테스트내/용8긴테스트내용9긴테스트내용"
-//        ) //MAX 24sp 기준 띄어쓰기 포함 50글자
-//            //TODO content 50글자 넘을 시 처리
+        // 긍정/부정 응답 횟수 관찰
+        myPageViewModel.positiveCount.observe(viewLifecycleOwner) { positiveCount ->
+            //todo
+        }
 
-        dialogShowCount = 0
-        positiveCount = 0
-        negativeCount = 0
-        showDialog()
+        myPageViewModel.negativeCount.observe(viewLifecycleOwner) { negativeCount ->
+            //todo
+        }
     }
 
-    fun showDialog(){
-
-        if(dialogShowCount<5){
-            customDialog = CustomDialogFragment.newInstance(
-                dialogArray[dialogShowCount]
-            )
-            customDialog.setDialogListener(this@MyPageFragment)
-            customDialog.show(parentFragmentManager,"customDialog")
-            dialogShowCount++
-        }
-        else{
-            Log.d("seyoung","positive : ${positiveCount}, negative : ${negativeCount}")
-        }
+    override fun onVolunteerClick(volunteer: Volunteer) {
+        myPageViewModel.showNextDialog() // 다이얼로그 표시 요청
     }
 
     override fun onPositiveButtonClick() {
-        positiveCount++ // 긍정 버튼 클릭 카운트 증가
-        showDialog() // 다음 다이얼로그 호출
+        myPageViewModel.onPositiveButtonClick() // 긍정 응답 처리
     }
 
     override fun onNegativeButtonClick() {
-        negativeCount++ // 부정 버튼 클릭 카운트 증가
-        showDialog() // 다음 다이얼로그 호출
+        myPageViewModel.onNegativeButtonClick() // 부정 응답 처리
     }
+
+
 }
