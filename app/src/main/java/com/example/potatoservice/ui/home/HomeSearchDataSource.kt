@@ -4,6 +4,9 @@ import com.example.potatoservice.model.APIService
 import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.model.remote.ActivityResponse
 import com.example.potatoservice.ui.share.Request
+
+import com.example.potatoservice.ui.share.SpinnerList
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -32,6 +35,7 @@ class HomeSearchDataSource @Inject constructor(private val apiService: APIServic
 	override fun search(request: Request, callback: HomeSearchData.LoadCallback){
 		with(request){
 			apiService.getActivities(page, size, sort, sidoCode, sidoGunguCode, beforeDeadlineOnly, teenPossibleOnly, category, keyword).enqueue(
+
 				object : Callback<ActivityResponse>{
 					override fun onResponse(
 						call: Call<ActivityResponse>,

@@ -91,6 +91,7 @@ data class ActivityDetail(
                 //강원대 위치
                 37.870448,
                 127.746190,
+
                 "기관 전화 번호 정보 없음"
             )
         )
@@ -139,6 +140,12 @@ data class HistoryItem(
     val activity: Activity,
     val activityStatus: String,
     val reviewed: Boolean
+)
+
+//리뷰 질문 정보
+data class Review(
+    val reviewId: Int,
+    val content: String
 )
 
 
