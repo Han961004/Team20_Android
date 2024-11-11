@@ -142,6 +142,12 @@ data class HistoryItem(
     val reviewed: Boolean
 )
 
+//리뷰 질문 정보
+data class Review(
+    val reviewId: Int,
+    val content: String
+)
+
 
 // 카카오 맵 API DATA CLASS
 data class AddressResponse(
