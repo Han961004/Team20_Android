@@ -22,8 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), AdapterCallback {
-    //검색 페이지 값
-    private var page:Int = 0
     //선택된 정렬 코드 값
     private var sortCode: String? = null
     //선택된 시도 코드 값
@@ -56,7 +54,6 @@ class HomeFragment : Fragment(), AdapterCallback {
         showSearchLoading()
         //검색 버튼 클릭 시
         binding.searchButton.setOnClickListener {
-            page = 0
             search()
         }
 
@@ -78,10 +75,10 @@ class HomeFragment : Fragment(), AdapterCallback {
         getBeforeDeadlineOnly()
         //군구 코드가 있으면 시도 코드 자리를 널로 함.
         val request = if(gunguCode != null) {
-            Request(page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category, keyword)
+            Request(mainViewModel.page, size, sortCode, null, gunguCode,beforeDeadlineOnly, teenPossibleOnly, category, keyword)
         } else{
             Request(
-                page,
+                mainViewModel.page,
                 size,
                 sortCode,
                 sidoCode,
@@ -180,7 +177,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             binding.searchResultRecyclerView.adapter = searchResultAdapter
             searchResultAdapter.attachToRecyclerView(binding.searchResultRecyclerView)
             searchResultAdapter.setNowItemCount(activityList.size)
-            if (recyclerViewState != null && page != 0) {
+            if (recyclerViewState != null && mainViewModel.page != 0) {
                 binding.searchResultRecyclerView.layoutManager?.onRestoreInstanceState(recyclerViewState)
                 recyclerViewState = null
             }
@@ -376,7 +373,6 @@ class HomeFragment : Fragment(), AdapterCallback {
     override fun loadMoreActivities(recyclerViewState: Parcelable?) {
         //검색 페이지가 마지막이 아니라면 계속 검색
         if (homeViewModel.lastPage.value == false){
-            page += 1
             this.recyclerViewState = recyclerViewState
             val request = setRequest()
             mainViewModel.loadMoreActivities(request)
