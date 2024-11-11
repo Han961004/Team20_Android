@@ -19,10 +19,14 @@ import com.example.potatoservice.model.remote.AddressResponse
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelTextStyle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Call
 import retrofit2.Callback
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 class MapViewModel : ViewModel() {
@@ -159,6 +163,21 @@ class MapViewModel : ViewModel() {
 
 
 
+    fun fetchCoordinatesList(addresses: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val deferredCoordinates = addresses.map { address ->
+                async {
+                    fetchCoordinates(address)
+                }
+            }
+
+            // 모든 좌표 변환이 완료될 때까지 기다림
+            val results = deferredCoordinates.awaitAll()
+            _markerDataList.postValue(results.filterNotNull())
+        }
+    }
+
+
 
 
     /* 주소를 좌표로 변환
@@ -166,39 +185,46 @@ class MapViewModel : ViewModel() {
      */
     private val _coordinates = MutableLiveData<Pair<Double, Double>?>()
     val coordinates: LiveData<Pair<Double, Double>?> get() = _coordinates
-    fun fetchCoordinates(address: String) {
-        val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"  // Kakao REST API 키를 설정하세요
-        val apiService = KakaoRetrofitClient.apiService()  // Retrofit을 통해 API 서비스 호출
+    private suspend fun fetchCoordinates(address: String): MarkerData? {
+        val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"
+        val apiService = KakaoRetrofitClient.apiService()
 
-        apiService.searchAddress(apiKey, address).enqueue(object : Callback<AddressResponse> {
-            override fun onResponse(call: Call<AddressResponse>, response: Response<AddressResponse>) {
-                if (response.isSuccessful) {
-                    val documents = response.body()?.documents
-                    if (!documents.isNullOrEmpty()) {
-                        val firstResult = documents[0]
-                        val longitude = firstResult.x.toDoubleOrNull()
-                        val latitude = firstResult.y.toDoubleOrNull()
-                        if (longitude != null && latitude != null) {
-                            _coordinates.postValue(Pair(latitude, longitude))
-                            Log.d("testt", "주소 변환 성공: $latitude, $longitude")
+        return suspendCoroutine { continuation ->
+            apiService.searchAddress(apiKey, address).enqueue(object : Callback<AddressResponse> {
+                override fun onResponse(call: Call<AddressResponse>, response: Response<AddressResponse>) {
+                    if (response.isSuccessful) {
+                        val documents = response.body()?.documents
+                        if (!documents.isNullOrEmpty()) {
+                            val firstResult = documents[0]
+                            val lat = firstResult.y.toDoubleOrNull()
+                            val lng = firstResult.x.toDoubleOrNull()
+                            continuation.resume(
+                                MarkerData(
+                                    lat = lat ?: 0.0,
+                                    lng = lng ?: 0.0,
+                                    title = address,
+                                    address = address,
+                                    description = "기본 설명", // 필요한 설명 텍스트로 수정 가능
+                                    organization = "기관 이름", // 기관 이름 또는 기본값
+                                    recruitmentPeriod = "모집기간", // 모집 기간
+                                    recruitmentCount = "모집인원", // 모집 인원
+                                    activityTime = "활동 시간", // 활동 시간
+                                    activityPeriod = "활동 기간" // 활동 기간
+                                )
+                            )
                         } else {
-                            Log.e("testt", "좌표 변환 실패: 좌표 값이 null입니다.")
+                            continuation.resume(null)
                         }
                     } else {
-                        Log.e("testt", "검색 결과 없음")
-                        _coordinates.postValue(null)
+                        continuation.resume(null)
                     }
-                } else {
-                    Log.e("testt", "API 응답 실패: ${response.message()}")
-                    _coordinates.postValue(null)
                 }
-            }
 
-            override fun onFailure(call: Call<AddressResponse>, t: Throwable) {
-                Log.e("testt", "API 요청 실패", t)
-                _coordinates.postValue(null)
-            }
-        })
+                override fun onFailure(call: Call<AddressResponse>, t: Throwable) {
+                    continuation.resume(null)
+                }
+            })
+        }
     }
 
 
