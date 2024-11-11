@@ -63,6 +63,8 @@ object MyPageModel {
     val volunteerCount = MutableLiveData<Int>()
     val ninkname = MutableLiveData<String>()
 
+
+
     //리사이클러뷰 count
     val recyclerViewCount = MutableLiveData<Int>()
 

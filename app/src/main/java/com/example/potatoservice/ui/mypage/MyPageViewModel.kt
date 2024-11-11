@@ -23,6 +23,7 @@ class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerCl
     private val _vmVolunteerCount = MutableLiveData<Int>()
     val vmVolunteerCount: LiveData<Int> get() = _vmVolunteerCount
 
+
     //경험치바 값
     private val _progress = MutableLiveData<Int>()
     val progress: LiveData<Int> get() = _progress
@@ -42,6 +43,7 @@ class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerCl
     //리사이클러뷰 count
     private val _vmRecyclerViewCount = MutableLiveData<Int>()
     val vmRecyclerViewCount: LiveData<Int> get() = _vmRecyclerViewCount
+
 
     //리사이클러뷰 어댑터
     val vmVolunteerAdapter: VolunteerAdapter = VolunteerAdapter(
@@ -91,7 +93,6 @@ class MyPageViewModel(private val context: Context) : ViewModel(), OnVolunteerCl
         }
 
     }
-
 
 
     //봉사시간에 따라 레벨과 경험치 값 조정

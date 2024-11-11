@@ -51,7 +51,8 @@ interface APIService {
         @Query("sidoGunguCode") sidoGunguCode: Int? = null,
         @Query("beforeDeadlineOnly") beforeDeadlineOnly: Boolean? = null,
         @Query("teenPossibleOnly") teenPossibleOnly: Boolean? = null,
-        @Query("category") category: String? = null
+        @Query("category") category: String? = null,
+        @Query("keyword") keyword: String? = null
     ): Call<ActivityResponse>
 
     /* 개별 활동 조회
