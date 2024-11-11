@@ -2,6 +2,7 @@ package com.example.potatoservice.ui.home
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -172,6 +173,14 @@ class HomeFragment : Fragment(), AdapterCallback {
     private fun setRecyclerAdapter() {
         binding.searchResultRecyclerView.layoutManager = LinearLayoutManager(activity)
         searchResultAdapter = SearchResultAdapter(this)
+    }
+
+    override fun onResume() {
+        recyclerAdapterObserve()
+        super.onResume()
+    }
+    //검색 결과 리사이클러뷰 옵저버
+    private fun recyclerAdapterObserve(){
         mainViewModel.searchResults.observe(viewLifecycleOwner, Observer { activityList ->
             searchResultAdapter.submitListWithSetLoading(activityList)
             binding.searchResultRecyclerView.adapter = searchResultAdapter
@@ -182,7 +191,6 @@ class HomeFragment : Fragment(), AdapterCallback {
                 recyclerViewState = null
             }
         })
-
     }
 
     //필터들 설정
