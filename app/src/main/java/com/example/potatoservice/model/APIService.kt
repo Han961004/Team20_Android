@@ -89,6 +89,12 @@ interface APIService {
     @GET("/api/v1/reviews/questions")
     fun getReview(): Call<List<Review>>
 
+    //개인 봉사 내역 추가하기
+    @POST("/api/v1/histories")
+    fun addHistory(
+        @Header("Authorization") jwtToken: String,
+        @Body actId : Int
+    ): Call<Void>
 
 
 

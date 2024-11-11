@@ -79,6 +79,7 @@ class MainViewModel @Inject constructor(
     init {
         homeRepository.activityList.asLiveData().observeForever { activities ->
             _searchResults.value = activities
+            Log.d("testt", activities.toString())
         }
     }
 }

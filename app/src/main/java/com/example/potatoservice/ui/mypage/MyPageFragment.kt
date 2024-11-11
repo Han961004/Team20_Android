@@ -114,8 +114,8 @@ class MyPageFragment : Fragment(), OnVolunteerClickListener, CustomDialogFragmen
                 "2024.10.01 ~ 2024.10.31", "132시간", "서울특별시", "확정 대기 중")
         )
         // 어댑터 설정(서버로부터 받아오는)
-//        binding.recyclerView.adapter = myPageViewModel.vmVolunteerAdapter //이게 진짜
-        binding.recyclerView.adapter = VolunteerAdapter(exVolunteerList,this) //임시로 설정
+        binding.recyclerView.adapter = myPageViewModel.vmVolunteerAdapter //이게 진짜
+//        binding.recyclerView.adapter = VolunteerAdapter(exVolunteerList,this) //임시로 설정
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
