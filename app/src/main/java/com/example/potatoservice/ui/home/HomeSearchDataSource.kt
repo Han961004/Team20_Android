@@ -4,6 +4,9 @@ import com.example.potatoservice.model.APIService
 import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.model.remote.ActivityResponse
 import com.example.potatoservice.ui.share.Request
+
+import com.example.potatoservice.ui.share.SpinnerList
+
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
