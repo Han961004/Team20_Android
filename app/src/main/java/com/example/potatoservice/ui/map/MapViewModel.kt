@@ -124,14 +124,14 @@ class MapViewModel : ViewModel() {
             }
         })
     }
-
+    //상세 페이지 지도 크게 보기를 통한 기관 마커 생성
     fun addInstituteMarker(kakaoMap: KakaoMap, latLng: LatLng, instituteName: String) {
         val style = LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5)
             .setTextStyles(LabelTextStyle.from(40, R.color.point_brown_2))
         val labelOptions = LabelOptions.from(latLng).setStyles(style).setTexts(instituteName)
         kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
     }
-
+    //상세 페이지 지도 크게 보기를 통한 기관 위치로 이동
     fun moveInstitute(kakaoMap: KakaoMap, latLng: LatLng) {
         val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         kakaoMap.moveCamera(cameraUpdate)
