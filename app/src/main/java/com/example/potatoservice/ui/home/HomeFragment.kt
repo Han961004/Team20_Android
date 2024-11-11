@@ -48,7 +48,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        binding.home = this
+        binding.homefragment = this
         setRecyclerAdapter()
         setSpinner()
         showSpinnerLoading()
