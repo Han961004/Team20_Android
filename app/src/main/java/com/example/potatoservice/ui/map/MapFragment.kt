@@ -39,27 +39,37 @@ class MapFragment : Fragment() {
         initMap()
         binding.buttonCurrentLocation.setOnClickListener { moveToCurrentLocation() }
 
-        /* MainViewModel 에서 데이터 관찰
-        * Home 에서 검색하여 데이터를 MainViewModel에 저장하고
-        * 여기서 MainViewModel을 관찰하여 데이터를 가져옵니다.
-         */
+        // MainViewModel에서 검색 결과를 관찰하여 각 활동의 위치를 주소로 전달
         mainViewModel.searchResults.observe(viewLifecycleOwner) { searchResults ->
             searchResults?.let { activities ->
+                mapViewModel.clearMarkerDataList()  // 이전 마커 데이터 초기화
                 activities.forEach { activity ->
-                    Log.d("testt", "MapFragment에서 받은 actLocation: ${activity.actTitle}")
+                    activity.actLocation?.let { location ->
+                        mapViewModel.fetchCoordinates(location)
+                    }
                 }
             }
         }
-        /* 테스트용
-        * 만약 actLocation이 이런식으로 온다면, 좌표로 바꿔줄 수 있습니다.
-        * 주소를 바꿔서 테스트 해보시길 바랍니다.
-         */
-        mapViewModel.fetchCoordinates("서울특별시 종로구 종로 1")
-        // 좌표 데이터 관찰
-        mapViewModel.coordinates.observe(viewLifecycleOwner) { coordinates ->
-            coordinates?.let { (latitude, longitude) ->
+
+        // coordinates와 함께 title 및 address를 전달받아 마커 추가
+        mapViewModel.coordinates.observe(viewLifecycleOwner) { data ->
+            data?.let { (latitude, longitude) ->
                 Log.d("testt", "받은 좌표: 위도 = $latitude, 경도 = $longitude")
-                // 이 좌표를 기반으로 추가 작업 가능
+
+                // MarkerData에 좌표 추가
+                mapViewModel.addMarkerData(
+                    lat = latitude,
+                    lng = longitude,
+                    title = "",
+                    address = ""
+                )
+            }
+        }
+
+        // markerDataList를 관찰하여 지도에 마커 추가
+        mapViewModel.markerDataList.observe(viewLifecycleOwner) { markerDataList ->
+            kakaoMap?.let { map ->
+                mapViewModel.addMarkersToMap(map)
             }
         }
     }
