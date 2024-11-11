@@ -104,7 +104,9 @@ class HomeFragment : Fragment(), AdapterCallback {
     }
     //검색 결과 개수 업데이트
     private fun getNumberOfElements(){
+        Log.d("testt", "numberOfElements: $numberOfElements")
         homeViewModel.numberOfElements.observe(viewLifecycleOwner, Observer {
+            Log.d("testt", "numberOfElements observe: $it")
             numberOfElements = it
             binding.invalidateAll()
         })
