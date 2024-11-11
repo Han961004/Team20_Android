@@ -82,4 +82,14 @@ class MainViewModel @Inject constructor(
             Log.d("testt", activities.toString())
         }
     }
+
+    /*
+    스피너 선택 값 저장
+    다른 프래그먼트로 이동해도 선택 값이 그대로 유지되게 함.
+     */
+    var spinnerSortValue = 0
+    var spinnerMajorValue = 0
+    var spinnerMinorValue = 0
+    var spinnerCategoryValue = 0
+    var spinnerAgeValue = 0
 }

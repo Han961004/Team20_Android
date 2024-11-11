@@ -211,6 +211,8 @@ class HomeFragment : Fragment(), AdapterCallback {
         )
         sortAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.sort.adapter = sortAdapter
+        //저장된 스피너 값 복원
+        binding.sort.setSelection(mainViewModel.spinnerSortValue)
         //정렬 선택 시
         binding.sort.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -220,6 +222,8 @@ class HomeFragment : Fragment(), AdapterCallback {
                 id: Long
             ) {
                 sortCode = SpinnerList.sortCode[position]
+                //스피너 값 뷰모델에 저장
+                mainViewModel.spinnerSortValue = position
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
@@ -241,6 +245,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             )
             majorRegionAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
             binding.majorRegionalCategories.adapter = majorRegionAdapter
+            binding.majorRegionalCategories.setSelection(mainViewModel.spinnerMajorValue)
             //지역 대분류 선택 시
             binding.majorRegionalCategories.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -270,6 +275,12 @@ class HomeFragment : Fragment(), AdapterCallback {
                         minorRegionAdapter.setDropDownViewResource(
                             com.example.potatoservice.R.layout.spinner_item_dropdown)
                         binding.minorRegionalCategories.adapter = minorRegionAdapter
+                        if(mainViewModel.spinnerMajorValue == position){
+                            binding.minorRegionalCategories.setSelection(mainViewModel.spinnerMinorValue)
+                        }
+                        else{
+                            mainViewModel.spinnerMajorValue = position
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -288,6 +299,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         minorRegionAdapter.setDropDownViewResource(
             com.example.potatoservice.R.layout.spinner_item_dropdown)
         binding.minorRegionalCategories.adapter = minorRegionAdapter
+        binding.minorRegionalCategories.setSelection(mainViewModel.spinnerMinorValue)
         //지역 소분류 선택 시
         binding.minorRegionalCategories.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -302,6 +314,8 @@ class HomeFragment : Fragment(), AdapterCallback {
                     }else{
                         null
                     }
+                    //스피너 값 뷰모델에 저장
+                    mainViewModel.spinnerMinorValue = position
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
@@ -319,6 +333,7 @@ class HomeFragment : Fragment(), AdapterCallback {
             )
             volunteerActivitiesAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
             binding.volunteerActivitiesCategories.adapter = volunteerActivitiesAdapter
+            binding.volunteerActivitiesCategories.setSelection(mainViewModel.spinnerCategoryValue)
             //봉사 분야 선택 시
             binding.volunteerActivitiesCategories.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
@@ -333,6 +348,7 @@ class HomeFragment : Fragment(), AdapterCallback {
                         }else{
                             category = null
                         }
+                        mainViewModel.spinnerCategoryValue = position
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -352,6 +368,7 @@ class HomeFragment : Fragment(), AdapterCallback {
         )
         ageAdapter.setDropDownViewResource(com.example.potatoservice.R.layout.spinner_item_dropdown) // 드롭다운 항목 레이아웃 설정
         binding.ageCategories.adapter = ageAdapter
+        binding.ageCategories.setSelection(mainViewModel.spinnerAgeValue)
         //나이 제한 선택 시
         binding.ageCategories.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -365,6 +382,7 @@ class HomeFragment : Fragment(), AdapterCallback {
                 } else {
                     null
                 }
+                mainViewModel.spinnerAgeValue = position
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
