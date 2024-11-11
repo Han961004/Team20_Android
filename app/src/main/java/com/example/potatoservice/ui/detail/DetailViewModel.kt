@@ -17,7 +17,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
 	application: Application,
-
 	private val repository: DetailRepository
 
 ): AndroidViewModel(application){
@@ -61,4 +60,8 @@ class DetailViewModel @Inject constructor(
 
 	val loading = repository.loading
 
+
+	fun addHistory(jwt : String,actId : Int){
+		repository.addHistory(jwt,actId)
+	}
 }

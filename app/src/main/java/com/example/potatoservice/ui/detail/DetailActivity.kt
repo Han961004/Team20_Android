@@ -1,6 +1,7 @@
 package com.example.potatoservice.ui.detail
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -80,6 +81,12 @@ class DetailActivity : AppCompatActivity() {
 			} else {
 				Toast.makeText(this, "웹 브라우저 앱을 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
 			}
+			val sharedPref = getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+			val jwt = sharedPref.getString("jwt_token","null")
+			if(jwt != null){
+				viewModel.addHistory(jwt, id)
+			}
+
 		}
 
 
