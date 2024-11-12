@@ -37,6 +37,7 @@
     <string name="활동시간">활동 시간 : %1$d시 ~ %2$d시</string>
     <string name="가능연령">가능 연령 : %1$s</string>
     <string name="단체봉사">단체 봉사 : %1$s</string>
+    <string name="봉사기관">봉사 기관 : %1$s</string>
     <string name="담당직원">담당 직원 : %1$s</string>
     <string name="전화번호">전화 번호 : %1$s</string>
     <string name="url">기관 url : %1$s</string>

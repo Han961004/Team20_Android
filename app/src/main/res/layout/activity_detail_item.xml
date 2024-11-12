@@ -185,6 +185,22 @@
                 android:background="#E0E0E0"
                 android:layout_marginTop="8dp" />
 
+            <!--            봉사 기관-->
+            <TextView
+                android:id="@+id/service_institute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{@string/봉사기관(detail.institute.name)}"
+                android:textColor="#424242"
+                android:layout_marginTop="8dp"/>
+
+            <!-- 구분선 -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginTop="8dp" />
+
             <!--            담당 직원-->
             <TextView
                 android:id="@+id/service_manager"
