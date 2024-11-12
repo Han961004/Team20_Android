@@ -58,22 +58,10 @@ class MapViewModel : ViewModel() {
         _markerDataList.value = listOf()
     }
 
-    fun addMarkerData(lat: Double, lng: Double, title: String, address: String) {
+    private fun addMarkerData(markerData: MarkerData) {
         val currentList = _markerDataList.value.orEmpty().toMutableList()
-        val newMarker = MarkerData(
-            lat = lat,
-            lng = lng,
-            title = title,
-            address = address,
-            description = "설명",
-            organization = "기관",
-            recruitmentPeriod = "모집기간",
-            recruitmentCount = "모집인원",
-            activityTime = "활동 시간",
-            activityPeriod = "활동 기간"
-        )
-        currentList.add(newMarker)
-        _markerDataList.value = currentList
+        currentList.add(markerData)
+        _markerDataList.postValue(currentList)
     }
 
     private val _selectedMarker = MutableLiveData<MarkerData?>()
@@ -152,8 +140,11 @@ class MapViewModel : ViewModel() {
                     fetchCoordinates(activity)
                 }
             }
-            val results = deferredCoordinates.awaitAll().filterNotNull()
-            _markerDataList.postValue(results)
+            // 각 deferred에서 완료된 마커 데이터를 하나씩 추가
+            deferredCoordinates.forEach { deferred ->
+                val result = deferred.await()
+                result?.let { addMarkerData(result) }
+            }
         }
     }
 
