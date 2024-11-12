@@ -34,11 +34,13 @@ class MapViewModel : ViewModel() {
     private val _cameraPosition = MutableLiveData<LatLng>()
     private val _zoomLevel = MutableLiveData<Int>()
 
+    //마지막 위도, 경도, 줌레벨 저장
     fun saveLastLocation(latitude: Double, longitude: Double, zoom: Int) {
         _cameraPosition.value = LatLng.from(latitude, longitude)
         _zoomLevel.value = zoom
     }
 
+    //마지막 위도, 경도, 줌레벨 가져오기
     fun getLastLocation(): Triple<Double, Double, Int> {
         val lat = _cameraPosition.value?.latitude ?: 37.402005
         val lon = _cameraPosition.value?.longitude ?: 127.108621
@@ -46,9 +48,12 @@ class MapViewModel : ViewModel() {
         return Triple(lat, lon, zoom)
     }
 
+
+    //마커 데이터 리스트
     private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf())
     val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
 
+    //마커 데이터 지우기
     fun clearMarkerDataList() {
         _markerDataList.value = listOf()
     }
@@ -124,6 +129,7 @@ class MapViewModel : ViewModel() {
             }
         })
     }
+
     //상세 페이지 지도 크게 보기를 통한 기관 마커 생성
     fun addInstituteMarker(kakaoMap: KakaoMap, latLng: LatLng, instituteName: String) {
         val style = LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5)
@@ -131,11 +137,13 @@ class MapViewModel : ViewModel() {
         val labelOptions = LabelOptions.from(latLng).setStyles(style).setTexts(instituteName)
         kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
     }
+
     //상세 페이지 지도 크게 보기를 통한 기관 위치로 이동
     fun moveInstitute(kakaoMap: KakaoMap, latLng: LatLng) {
         val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         kakaoMap.moveCamera(cameraUpdate)
     }
+
 
     fun fetchCoordinatesList(activities: List<Activity>) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -144,22 +152,25 @@ class MapViewModel : ViewModel() {
                     fetchCoordinates(activity)
                 }
             }
-
             val results = deferredCoordinates.awaitAll().filterNotNull()
             _markerDataList.postValue(results)
         }
     }
 
+    //Activity 데이터를 MarkerData로 변환(마커 찍을 수 있게)
     private suspend fun fetchCoordinates(activity: Activity): MarkerData? {
         val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"
         val apiService = KakaoRetrofitClient.apiService()
 
         return suspendCoroutine { continuation ->
+            //활동 장소(String)으로 카카오지도api 검색
             apiService.searchAddress(apiKey, activity.actLocation.toString()).enqueue(object : Callback<AddressResponse> {
                 override fun onResponse(call: Call<AddressResponse>, response: Response<AddressResponse>) {
+
                     if (response.isSuccessful) {
                         val documents = response.body()?.documents
                         if (!documents.isNullOrEmpty()) {
+                            //결과 첫 번째 값을 할당
                             val firstResult = documents[0]
                             val lat = firstResult.y.toDoubleOrNull()
                             val lng = firstResult.x.toDoubleOrNull()
