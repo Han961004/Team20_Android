@@ -1,10 +1,10 @@
 package com.example.potatoservice.ui.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potatoservice.BuildConfig.KAKAO_REST_API_KEY
 import com.example.potatoservice.R
 import com.example.potatoservice.model.KakaoRetrofitClient
 import com.example.potatoservice.model.RetrofitClient
@@ -19,6 +19,7 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextStyle
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -64,7 +65,6 @@ class MapViewModel : ViewModel() {
     fun selectMarker(markerData: MarkerData) {
         _selectedMarker.value = markerData
     }
-
 
     /*
      * 마커 데이터를 기반으로 KakaoMap 객체에 마커들을 추가하고 클릭 리스너를 설정합니다.
@@ -130,12 +130,12 @@ class MapViewModel : ViewModel() {
 
 
     /*
-    * 개별 Activity 객체의 위치 정보를 가져와 MarkerData로 변환합니다.
-    * @param activity 위치 정보를 가져올 Activity 객체
-    * @return 위치가 성공적으로 조회되면 MarkerData 객체, 그렇지 않으면 null
+     * 개별 Activity 객체의 위치 정보를 가져와 MarkerData로 변환합니다.
+     * @param activity 위치 정보를 가져올 Activity 객체
+     * @return 위치가 성공적으로 조회되면 MarkerData 객체, 그렇지 않으면 null
      */
     private suspend fun fetchCoordinates(activity: Activity): MarkerData? {
-        val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"
+        val apiKey = "KakaoAK ${KAKAO_REST_API_KEY}"
         val apiService = KakaoRetrofitClient.apiService()
 
         return suspendCoroutine { continuation ->
@@ -153,7 +153,7 @@ class MapViewModel : ViewModel() {
                                     lng = lng ?: 0.0,
                                     title = activity.actTitle.toString(),
                                     address = activity.actLocation.toString(),
-                                    description = "활동 설명: ${activity.category}",
+                                    description = "${activity.category}",
                                     organization = "",
                                     recruitmentPeriod = "${activity.noticeStartDate} ~ ${activity.noticeEndDate}",
                                     recruitmentCount = "${activity.recruitTotalNum}",
