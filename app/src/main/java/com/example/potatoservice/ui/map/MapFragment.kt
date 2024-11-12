@@ -49,9 +49,13 @@ class MapFragment : Fragment() {
 
         // markerDataList를 관찰하여 지도에 마커 추가
         mapViewModel.markerDataList.observe(viewLifecycleOwner) { markerDataList ->
-            kakaoMap?.let { map ->
-                mapViewModel.addMarkersToMap(map)  // 마커 리스트가 업데이트될 때만 지도에 추가
+            //상세 페이지에서 받아온 정보가 없을 때만.
+            if (this.arguments == null){
+                kakaoMap?.let { map ->
+                    mapViewModel.addMarkersToMap(map)  // 마커 리스트가 업데이트될 때만 지도에 추가
+                }
             }
+
         }
     }
 
@@ -108,8 +112,11 @@ class MapFragment : Fragment() {
 
                 // markerDataList 관찰
                 mapViewModel.markerDataList.observe(viewLifecycleOwner) { markerDataList ->
-                    markerDataList?.let {
-                        mapViewModel.addMarkersToMap(kakaoMap)
+                    // 상세 페이지에서 받아온 정보가 없을 때만
+                    if (arguments == null){
+                        markerDataList?.let {
+                            mapViewModel.addMarkersToMap(kakaoMap)
+                        }
                     }
                 }
 
