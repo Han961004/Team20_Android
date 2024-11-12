@@ -34,11 +34,22 @@ class MapViewModel : ViewModel() {
     private val _cameraPosition = MutableLiveData<LatLng>()
     private val _zoomLevel = MutableLiveData<Int>()
 
+    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf())
+    val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
+
+    private val _selectedMarker = MutableLiveData<MarkerData?>()
+    val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
+
+
     fun saveLastLocation(latitude: Double, longitude: Double, zoom: Int) {
         _cameraPosition.value = LatLng.from(latitude, longitude)
         _zoomLevel.value = zoom
     }
 
+    /*
+     * 마지막 저장된 카메라 위치와 줌 레벨을 반환합니다.
+     * Triple 위도, 경도, 줌 레벨이 포함된 Triple
+     */
     fun getLastLocation(): Triple<Double, Double, Int> {
         val lat = _cameraPosition.value?.latitude ?: 37.402005
         val lon = _cameraPosition.value?.longitude ?: 127.108621
@@ -46,62 +57,19 @@ class MapViewModel : ViewModel() {
         return Triple(lat, lon, zoom)
     }
 
-    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf())
-    val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
-
     fun clearMarkerDataList() {
         _markerDataList.value = listOf()
-    }
-
-    fun addMarkerData(lat: Double, lng: Double, title: String, address: String) {
-        val currentList = _markerDataList.value.orEmpty().toMutableList()
-        val newMarker = MarkerData(
-            lat = lat,
-            lng = lng,
-            title = title,
-            address = address,
-            description = "설명",
-            organization = "기관",
-            recruitmentPeriod = "모집기간",
-            recruitmentCount = "모집인원",
-            activityTime = "활동 시간",
-            activityPeriod = "활동 기간"
-        )
-        currentList.add(newMarker)
-        _markerDataList.value = currentList
-    }
-
-    private val _selectedMarker = MutableLiveData<MarkerData?>()
-    val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
-
-    fun setMarkerData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = RetrofitClient.apiService().getMarkers()
-            response.enqueue(object : Callback<List<MarkerData>> {
-                override fun onResponse(call: Call<List<MarkerData>>, response: Response<List<MarkerData>>) {
-                    if (response.isSuccessful) {
-                        _markerDataList.postValue(response.body())
-                        Log.d("testt", "Markers fetched successfully: ${response.body()}")
-                    } else {
-                        Log.d("testt", "Response unsuccessful: ${response.code()} - ${response.message()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<List<MarkerData>>, t: Throwable) {
-                    Log.e("testt", "Failed to fetch markers", t)
-                }
-            })
-        }
     }
 
     fun selectMarker(markerData: MarkerData) {
         _selectedMarker.value = markerData
     }
 
-    fun clearSelectedMarker() {
-        _selectedMarker.value = null
-    }
 
+    /*
+     * 마커 데이터를 기반으로 KakaoMap 객체에 마커들을 추가하고 클릭 리스너를 설정합니다.
+     * kakaoMap 마커를 추가할 KakaoMap 객체
+     */
     fun addMarkersToMap(kakaoMap: KakaoMap) {
         kakaoMap.labelManager?.removeAllLabelLayer()
 
@@ -132,11 +100,21 @@ class MapViewModel : ViewModel() {
         kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
     }
 
+
+    /*
+     * 지도 카메라를 특정 위치로 이동합니다.
+     * kakaoMap 카메라 이동을 수행할 KakaoMap 객체
+     * latLng 이동할 위치의 위도와 경도를 나타내는 LatLng 객체
+     */
     fun moveInstitute(kakaoMap: KakaoMap, latLng: LatLng) {
         val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         kakaoMap.moveCamera(cameraUpdate)
     }
 
+    /*
+     * 여러 Activity 객체의 위치 정보를 비동기적으로 가져와 마커 데이터 리스트에 저장합니다.
+     * activities 위치 정보를 가져올 Activity 객체 리스트
+     */
     fun fetchCoordinatesList(activities: List<Activity>) {
         viewModelScope.launch(Dispatchers.IO) {
             val deferredCoordinates = activities.map { activity ->
@@ -150,6 +128,12 @@ class MapViewModel : ViewModel() {
         }
     }
 
+
+    /*
+    * 개별 Activity 객체의 위치 정보를 가져와 MarkerData로 변환합니다.
+    * @param activity 위치 정보를 가져올 Activity 객체
+    * @return 위치가 성공적으로 조회되면 MarkerData 객체, 그렇지 않으면 null
+     */
     private suspend fun fetchCoordinates(activity: Activity): MarkerData? {
         val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"
         val apiService = KakaoRetrofitClient.apiService()
