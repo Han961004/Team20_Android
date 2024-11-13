@@ -1,10 +1,10 @@
 package com.example.potatoservice.ui.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potatoservice.BuildConfig.KAKAO_REST_API_KEY
 import com.example.potatoservice.R
 import com.example.potatoservice.model.KakaoRetrofitClient
 import com.example.potatoservice.model.RetrofitClient
@@ -19,6 +19,7 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextStyle
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -34,13 +35,22 @@ class MapViewModel : ViewModel() {
     private val _cameraPosition = MutableLiveData<LatLng>()
     private val _zoomLevel = MutableLiveData<Int>()
 
-    //마지막 위도, 경도, 줌레벨 저장
+    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf())
+    val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
+
+    private val _selectedMarker = MutableLiveData<MarkerData?>()
+    val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
+
+
     fun saveLastLocation(latitude: Double, longitude: Double, zoom: Int) {
         _cameraPosition.value = LatLng.from(latitude, longitude)
         _zoomLevel.value = zoom
     }
 
-    //마지막 위도, 경도, 줌레벨 가져오기
+    /*
+     * 마지막 저장된 카메라 위치와 줌 레벨을 반환합니다.
+     * Triple 위도, 경도, 줌 레벨이 포함된 Triple
+     */
     fun getLastLocation(): Triple<Double, Double, Int> {
         val lat = _cameraPosition.value?.latitude ?: 37.402005
         val lon = _cameraPosition.value?.longitude ?: 127.108621
@@ -48,53 +58,18 @@ class MapViewModel : ViewModel() {
         return Triple(lat, lon, zoom)
     }
 
-
-    //마커 데이터 리스트
-    private val _markerDataList = MutableLiveData<List<MarkerData>>(listOf())
-    val markerDataList: LiveData<List<MarkerData>> get() = _markerDataList
-
-    //마커 데이터 지우기
     fun clearMarkerDataList() {
         _markerDataList.value = listOf()
-    }
-
-    private fun addMarkerData(markerData: MarkerData) {
-        val currentList = _markerDataList.value.orEmpty().toMutableList()
-        currentList.add(markerData)
-        _markerDataList.postValue(currentList)
-    }
-
-    private val _selectedMarker = MutableLiveData<MarkerData?>()
-    val selectedMarker: LiveData<MarkerData?> get() = _selectedMarker
-
-    fun setMarkerData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = RetrofitClient.apiService().getMarkers()
-            response.enqueue(object : Callback<List<MarkerData>> {
-                override fun onResponse(call: Call<List<MarkerData>>, response: Response<List<MarkerData>>) {
-                    if (response.isSuccessful) {
-                        _markerDataList.postValue(response.body())
-                        Log.d("testt", "Markers fetched successfully: ${response.body()}")
-                    } else {
-                        Log.d("testt", "Response unsuccessful: ${response.code()} - ${response.message()}")
-                    }
-                }
-
-                override fun onFailure(call: Call<List<MarkerData>>, t: Throwable) {
-                    Log.e("testt", "Failed to fetch markers", t)
-                }
-            })
-        }
     }
 
     fun selectMarker(markerData: MarkerData) {
         _selectedMarker.value = markerData
     }
 
-    fun clearSelectedMarker() {
-        _selectedMarker.value = null
-    }
-
+    /*
+     * 마커 데이터를 기반으로 KakaoMap 객체에 마커들을 추가하고 클릭 리스너를 설정합니다.
+     * kakaoMap 마커를 추가할 KakaoMap 객체
+     */
     fun addMarkersToMap(kakaoMap: KakaoMap) {
         kakaoMap.labelManager?.removeAllLabelLayer()
 
@@ -118,7 +93,6 @@ class MapViewModel : ViewModel() {
         })
     }
 
-    //상세 페이지 지도 크게 보기를 통한 기관 마커 생성
     fun addInstituteMarker(kakaoMap: KakaoMap, latLng: LatLng, instituteName: String) {
         val style = LabelStyle.from(R.drawable.ic_map_marker_institute).setZoomLevel(5)
             .setTextStyles(LabelTextStyle.from(40, R.color.point_brown_2))
@@ -126,13 +100,21 @@ class MapViewModel : ViewModel() {
         kakaoMap.labelManager!!.layer!!.addLabel(labelOptions)
     }
 
-    //상세 페이지 지도 크게 보기를 통한 기관 위치로 이동
+
+    /*
+     * 지도 카메라를 특정 위치로 이동합니다.
+     * kakaoMap 카메라 이동을 수행할 KakaoMap 객체
+     * latLng 이동할 위치의 위도와 경도를 나타내는 LatLng 객체
+     */
     fun moveInstitute(kakaoMap: KakaoMap, latLng: LatLng) {
         val cameraUpdate = CameraUpdateFactory.newCenterPosition(latLng)
         kakaoMap.moveCamera(cameraUpdate)
     }
 
-
+    /*
+     * 여러 Activity 객체의 위치 정보를 비동기적으로 가져와 마커 데이터 리스트에 저장합니다.
+     * activities 위치 정보를 가져올 Activity 객체 리스트
+     */
     fun fetchCoordinatesList(activities: List<Activity>) {
         viewModelScope.launch(Dispatchers.IO) {
             val deferredCoordinates = activities.map { activity ->
@@ -140,28 +122,28 @@ class MapViewModel : ViewModel() {
                     fetchCoordinates(activity)
                 }
             }
-            // 각 deferred에서 완료된 마커 데이터를 하나씩 추가
-            deferredCoordinates.forEach { deferred ->
-                val result = deferred.await()
-                result?.let { addMarkerData(result) }
-            }
+
+            val results = deferredCoordinates.awaitAll().filterNotNull()
+            _markerDataList.postValue(results)
         }
     }
 
-    //Activity 데이터를 MarkerData로 변환(마커 찍을 수 있게)
+
+    /*
+     * 개별 Activity 객체의 위치 정보를 가져와 MarkerData로 변환합니다.
+     * @param activity 위치 정보를 가져올 Activity 객체
+     * @return 위치가 성공적으로 조회되면 MarkerData 객체, 그렇지 않으면 null
+     */
     private suspend fun fetchCoordinates(activity: Activity): MarkerData? {
-        val apiKey = "KakaoAK aa23edc0dd8f4cc31ed3c9245040e78d"
+        val apiKey = "KakaoAK ${KAKAO_REST_API_KEY}"
         val apiService = KakaoRetrofitClient.apiService()
 
         return suspendCoroutine { continuation ->
-            //활동 장소(String)으로 카카오지도api 검색
             apiService.searchAddress(apiKey, activity.actLocation.toString()).enqueue(object : Callback<AddressResponse> {
                 override fun onResponse(call: Call<AddressResponse>, response: Response<AddressResponse>) {
-
                     if (response.isSuccessful) {
                         val documents = response.body()?.documents
                         if (!documents.isNullOrEmpty()) {
-                            //결과 첫 번째 값을 할당
                             val firstResult = documents[0]
                             val lat = firstResult.y.toDoubleOrNull()
                             val lng = firstResult.x.toDoubleOrNull()
@@ -171,7 +153,7 @@ class MapViewModel : ViewModel() {
                                     lng = lng ?: 0.0,
                                     title = activity.actTitle.toString(),
                                     address = activity.actLocation.toString(),
-                                    description = "활동 설명: ${activity.category}",
+                                    description = "${activity.category}",
                                     organization = "",
                                     recruitmentPeriod = "${activity.noticeStartDate} ~ ${activity.noticeEndDate}",
                                     recruitmentCount = "${activity.recruitTotalNum}",
