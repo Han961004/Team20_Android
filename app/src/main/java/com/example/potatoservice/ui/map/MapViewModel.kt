@@ -1,9 +1,13 @@
 package com.example.potatoservice.ui.map
 
+import android.app.Application
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potatoservice.BuildConfig
 import com.example.potatoservice.BuildConfig.KAKAO_REST_API_KEY
 import com.example.potatoservice.R
 import com.example.potatoservice.model.KakaoRetrofitClient
@@ -12,6 +16,7 @@ import com.example.potatoservice.model.remote.Activity
 import com.example.potatoservice.model.remote.AddressResponse
 import com.example.potatoservice.model.remote.MarkerData
 import com.kakao.vectormap.KakaoMap
+import com.kakao.vectormap.KakaoMapSdk
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelLayer
@@ -19,6 +24,7 @@ import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import com.kakao.vectormap.label.LabelStyles
 import com.kakao.vectormap.label.LabelTextStyle
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +36,7 @@ import retrofit2.Response
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class MapViewModel : ViewModel() {
+class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _cameraPosition = MutableLiveData<LatLng>()
     private val _zoomLevel = MutableLiveData<Int>()
@@ -135,7 +141,7 @@ class MapViewModel : ViewModel() {
      * @return 위치가 성공적으로 조회되면 MarkerData 객체, 그렇지 않으면 null
      */
     private suspend fun fetchCoordinates(activity: Activity): MarkerData? {
-        val apiKey = "KakaoAK ${KAKAO_REST_API_KEY}"
+        val apiKey = "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
         val apiService = KakaoRetrofitClient.apiService()
 
         return suspendCoroutine { continuation ->
